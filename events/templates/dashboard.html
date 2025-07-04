@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="{% static 'css/output.css' %}">
+</head>
+<body class="bg-gray-100">
+  <div class="max-w-[1400px] mx-auto p-6">
+
+    <header class="mb-7">
+      <h1 class="text-center text-xl sm:text-2xl md:text-3xl font-bold">Dashboard</h1>
+    </header>
+
+  
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 px-4">
+      <a href="{% url 'dashboard' %}?type=total_participants" class="bg-white rounded-xl shadow-lg p-6 text-center text-gray-800 hover:shadow-2xl transition-shadow ">
+        <h2>Total Participants</h2>
+        <p class="text-2xl font-bold">{{ total_participants }}</p>
+      </a>
+
+      <a href="{% url 'dashboard' %}?type=total_events" class="bg-white rounded-xl shadow-lg p-6 text-center text-gray-800 hover:shadow-2xl transition-shadow ">
+        <h2>Total Events</h2>
+        <p class="text-2xl font-bold">{{ total_events }}</p>
+      </a>
+
+      <a href="{% url 'dashboard' %}?type=upcoming_events" class="bg-white rounded-xl shadow-lg p-6 text-center text-gray-800 hover:shadow-2xl transition-shadow ">
+        <h2>Upcoming Events</h2>
+        <p class="text-2xl font-bold">{{ upcoming_events }}</p>
+      </a>
+
+      <a href="{% url 'dashboard' %}?type=past_events" class="bg-white rounded-xl shadow-lg p-6 text-center text-gray-800 hover:shadow-2xl transition-shadow ">
+        <h2>Past Events</h2>
+        <p class="text-2xl font-bold">{{ past_events }}</p>
+      </a>
+    </section>
+
+    <section class="bg-white rounded-xl shadow-lg p-6 mx-4 mb-8">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">{{ event_list_title }}</h2>
+      {% if show_event %}
+        <ul class="space-y-3">
+          {% for event in show_event %}
+            <li class="p-4 bg-gray-100 rounded-lg shadow-sm hover:bg-gray-200 transition">
+              <h3 class="text-lg font-semibold">{{ event.name }}</h3>
+              <p class="text-sm text-gray-600">Category: {{ event.category.name }}</p>
+              <p class="text-sm text-gray-600">Date: {{ event.date }}</p>
+              <p class="text-sm text-gray-600">Location: {{ event.location }}</p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-gray-600">No Event Found </p>
+      {% endif %}
+    </section>
+
+  </div>
+</body>
+</html>
