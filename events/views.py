@@ -155,5 +155,5 @@ def delete_category(request,id):
         messages.success(request, 'Category Deleted Successfully')
         return redirect('category_list')
     
-def event_management(request):
-    return render(request,'event_management.html')
+def home(request):
+    return render(request,'home.html')
