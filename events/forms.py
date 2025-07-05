@@ -2,7 +2,7 @@ from django import forms
 from events.models import Event, Participant, Category
 
 class StyledFormMixin:
-    default_classes = "border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-rose-500"
+    default_classes = "border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
 
     def apply_styled_widgets(self):
         for field_name, field in self.fields.items():
@@ -34,6 +34,11 @@ class StyledFormMixin:
                     'placeholder' : f"Enter {field.label.lower()}",
                     'type' : 'time',
                 })
+            elif isinstance(field.widget, forms.Select):
+                field.widget.attrs.update({
+                'class': self.default_classes
+                })
+
             else :
                 field.widget.attrs.update({
                     'class' : self.default_classes

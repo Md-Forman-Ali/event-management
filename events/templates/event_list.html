@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Event List</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100  p-6">
+
+  <div class=" mx-auto bg-white p-6 rounded shadow-md">
+
+    {% if messages %}
+      <div class="mb-6">
+        {% for message in messages %}
+          <div
+            class="p-4 rounded mb-3
+            {% if message.tags == 'success' %} bg-green-200 text-green-800
+            
+            {% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Events List</h1>
+
+    <ul>
+      {% for event in events %}
+        <li class="mb-4 border border-gray-300 rounded p-4">
+          <h2 class="text-xl font-semibold mb-1">{{ event.name }}</h2>
+          <p class="text-gray-600 mb-1">Category: {{ event.category.name }}</p>
+          <p class="text-gray-600">Participants: {{ event.participants.count }}</p>
+          <p class="text-gray-600">Description: {{ event.description }}</p>
+          <p class="text-gray-600">Location: {{ event.loaction }}</p>
+          <p class="text-gray-600">Date: {{ event.date }}</p>
+          <p class="text-gray-600 mb-3">Time: {{ event.time }}</p>
+
+    
+          <div class="flex space-x-3">
+            <a href="{% url 'update_event' event.id %}" 
+               class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+              Edit
+            </a>
+            <form action="{% url 'delete_event' event.id %}" method="POST">
+              {% csrf_token %}
+              <button type="submit" 
+                    class="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-700">
+                Delete
+              </button>
+            </form>
+          </div>
+        </li>
+      {% empty %}
+        <li class="text-center text-gray-500">No events Found</li>
+      {% endfor %}
+    </ul>
+
+  </div>
+
+</body>
+</html>

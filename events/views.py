@@ -12,29 +12,25 @@ def dashboard(request):
 
     total_events = Event.objects.count()
     total_participants = Participant.objects.count()
+    todays_events = Event.objects.filter(date=today).select_related('category')
     upcoming_events_count = Event.objects.filter(date__gt=today).count()
     past_events_count = Event.objects.filter(date__lt=today).count()
     base_query = Event.objects.select_related('category').prefetch_related('participants')
 
     if type == 'today':
         events = base_query.filter(date=today)
-        event_list_title = "Today's Events"
     elif type == 'upcoming_events':
         events = base_query.filter(date__gt=today)
-        event_list_title = "Upcoming Events"
     elif type == 'past_events':
         events = base_query.filter(date__lt=today)
-        event_list_title = "Past Events"
     else:
         events = base_query.all()
-        event_list_title = "All Events"
-
     context = {
         'total_events': total_events,
         'total_participants': total_participants,
+        'todays_events': todays_events, 
         'upcoming_events': upcoming_events_count,
         'past_events': past_events_count,
-        'event_list_title': event_list_title,
         'show_event': events,
     }
 
@@ -50,12 +46,17 @@ def create_event(request):
             messages.success(request, "Event Created Successfully")
             return redirect("event_list")
         return render(request, 'event_form.html', {'form': event_form})
+    return render(request, 'event_form.html', {'form': event_form})
 
 
 def event_list(request):
-    events = Event.objects.select_related('category').prefetch_related('participants').all()
-    return render(request, 'event_list.html', {'events': events})
+    search = request.GET.get('search', '')
+    if search:
+        events = Event.objects.filter(Q(name__icontains=search) | Q(location__icontains=search)).select_related('category').prefetch_related('participants')
+    else:
+        events = Event.objects.select_related('category').prefetch_related('participants').all()
 
+    return render(request, 'event_list.html', { 'events': events,'search': search})
 
 def update_event(request,id):
     event = Event.objects.get(id=id)
@@ -70,6 +71,7 @@ def update_event(request,id):
             return redirect('event_list')
            
         return render(request, 'event_form.html', {'form': event_form})
+    return render(request, 'event_form.html', {'form': event_form})
 
 def delete_event(request,id):
     if request.method == "POST":
@@ -89,7 +91,8 @@ def create_participate(request):
             participant_form.save()
             messages.success(request,"Participant Create Successfully")
             return redirect("participant_list")
-        return render(request, 'participate_form.html', {'form': participant_form})
+        return render(request, 'participant_form.html', {'form': participant_form})
+    return render(request, 'participant_form.html', {'form': participant_form})
 
 def participant_list(request):
     participants = Participant.objects.prefetch_related('events').all()
@@ -105,7 +108,8 @@ def update_participant(request,id):
             participant_form.save()
             messages.success(request,"Participant Update Succesfully")
             return redirect('participant_list')
-        return render(request, 'participate_form.html', {'form': participant_form})
+        return render(request, 'participant_form.html', {'form': participant_form})
+    return render(request, 'participant_form.html', {'form': participant_form}) 
      
             
 
@@ -116,6 +120,8 @@ def delete_participate(request,id):
         messages.success(request, 'Participant Deleted Successfully')
         return redirect('participant_list')
 
+
+
 def create_category(request):
     category_form = CategoryModelForm()
     if request.method =='POST':
@@ -124,10 +130,11 @@ def create_category(request):
             category_form.save()
             return redirect('category_list')
         return render(request, 'category_form.html', {'form': category_form})
+    return render(request, 'category_form.html', {'form': category_form})
     
 def category_list(request):
-    category= Category.objects.all()
-    return render(request, 'category_list.html', {'category': category})
+    categories = Category.objects.all()  
+    return render(request, 'category_list.html', {'categories': categories})
 
 def update_category(request,id):
     category = Category.objects.get(id=id)
@@ -139,6 +146,7 @@ def update_category(request,id):
             messages.success(request,"Category Update Successfully")
             return redirect('category_list')
         return render(request, 'category_form.html', {'form': category_form})
+    return render(request, 'category_form.html', {'form': category_form})
 
 def delete_category(request,id):
     if request.method=="POST":
@@ -147,3 +155,5 @@ def delete_category(request,id):
         messages.success(request, 'Category Deleted Successfully')
         return redirect('category_list')
     
+def event_management(request):
+    return render(request,'event_management.html')

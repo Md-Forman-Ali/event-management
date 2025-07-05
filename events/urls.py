@@ -20,6 +20,7 @@ urlpatterns = [
     path('category/create/', views.create_category, name='create_category'),
     path('category/<int:id>/update/', views.update_category, name='update_category'),
     path('category/<int:id>/delete/', views.delete_category, name='delete_category'),
+    path('event-management/', views.event_management, name='event_management'),
     
 
 ]
