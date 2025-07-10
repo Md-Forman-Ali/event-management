@@ -27,8 +27,10 @@ SECRET_KEY = 'django-insecure-=5ghst_hzailb@&o85#r0*@)vx2yn44w(faw0@pa5^-hrm%6a5
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED__ORIGINS = ['https://*.onrender.com','http://127.0.0.1:8000/']
-
+CSRF_TRUSTED__ORIGINS = ['https://*.onrender.com','http://127.0.0.1:8000','https://event-management-e9ne.onrender.com']
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_DOMAIN = '.onrender.com'
 
 # Application definition
 
