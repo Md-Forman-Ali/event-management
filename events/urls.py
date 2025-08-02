@@ -1,9 +1,10 @@
 
-from django.urls import path
+from django.urls import path,include
 from events import views
+from core.views import no_permission
 
 urlpatterns = [
-
+    path('users/', include('users.urls')),
     path('dashboard/', views.dashboard, name='dashboard'),
 
     path('events/', views.event_list, name='event_list'),
@@ -21,7 +22,9 @@ urlpatterns = [
     path('category/<int:id>/update/', views.update_category, name='update_category'),
     path('category/<int:id>/delete/', views.delete_category, name='delete_category'),
     
-    path('', views.home, name='home')
+    path('home/', views.home, name='home'),
+    path('no-permission/',no_permission, name='no_permission'),
+   
     
 
 ]

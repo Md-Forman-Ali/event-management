@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+   
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-center">Create an Account</h1>
+
+        {% if form.non_field_errors %}
+            <div class="text-red-500 mb-4 text-sm">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            {% for field in form %}
+                <div>
+                    <p>
+                    <label for="{{ field.id_for_label }}"> {{field.label}} </label>
+
+                        {{ field }}
+
+                    {% if field.errors %}
+                            <ul>
+                                {% for error in field.errors %}
+                                <li>{{error}}</li>
+                                {% endfor %}
+                            </ul>
+                    {% endif %}
+               </p>
+                </div>
+            {% endfor %}
+
+             <button type="submit" class=" w-full text-white bg-gradient-to-r mt-4 from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 ">Sign up</button>
+        </form>
+    </div>
+</body>
+</html>
