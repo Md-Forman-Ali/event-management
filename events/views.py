@@ -1,17 +1,81 @@
 from django.shortcuts import render, redirect
 from datetime import date
-from events.models import Event,Participant,Category
-from events.forms import EventModelForm,ParticipantModelForm,CategoryModelForm
-from django.db.models import Count, Q
-from django.http import HttpResponse 
+from events.models import Event, Category,Rsvp
+from events.forms import EventModelForm, CategoryModelForm
+from django.db.models import Q
 from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required, user_passes_test
+
+def is_participant(user):
+    return user.groups.filter(name='Participant').exists()
+def event_list(request):
+    user = request.user
+    search = request.GET.get('search', '')
+
+    if search:
+        events = Event.objects.filter(
+            Q(name__icontains=search) | Q(location__icontains=search)
+        ).select_related('category').prefetch_related('rsvp')
+    else:
+        events = Event.objects.select_related('category').prefetch_related('rsvp').all()
+
+    if user.is_authenticated:
+        for event in events:
+            event.user_has_rsvped = event.rsvp.filter(user=user).exists()
+    else:
+        for event in events:
+            event.user_has_rsvped = False
+
+    context = {
+        'events': events,
+        'search': search,
+    }
+    return render(request, 'event_list.html', context)
+
+
+def event_detail(request, id):
+    try:
+        event = Event.objects.get(id=id)
+    except Event.DoesNotExist:
+        messages.error(request, "Event not found.")
+        return redirect('event_list')
+    
+    user_has_rsvped = False
+    if request.user.is_authenticated:
+        user_has_rsvped = Rsvp.objects.filter(user=request.user, event=event).exists()
+    
+    context = {
+        'event': event,
+        'user_has_rsvped': user_has_rsvped,
+    }
+    return render(request, 'events/event_detail.html', context)
+
+@login_required
+@user_passes_test(is_participant, login_url='no_permission')
+def rsvp_event(request, id):
+    try:
+        event = Event.objects.get(id=id)
+    except Event.DoesNotExist:
+        messages.error(request, "Event not found.")
+        return redirect('event_list')
+    
+    user = request.user
+    if Rsvp.objects.filter(user=user, event=event).exists():
+        messages.warning(request, "You have already RSVP'd for this event.")
+    else:
+        Rsvp.objects.create(user=user, event=event)
+        messages.success(request, "RSVP successful! Check your email.")
+    return redirect('participant_dashboard')
+
+   
 
 def dashboard(request):
     type = request.GET.get('type', 'all')
     today = date.today()
 
     total_events = Event.objects.count()
-    total_participants = Participant.objects.count()
+    total_participants = User.objects.count()  
     todays_events = Event.objects.filter(date=today).select_related('category')
     upcoming_events_count = Event.objects.filter(date__gt=today).count()
     past_events_count = Event.objects.filter(date__lt=today).count()
@@ -25,10 +89,11 @@ def dashboard(request):
         events = base_query.filter(date__lt=today)
     else:
         events = base_query.all()
+
     context = {
         'total_events': total_events,
         'total_participants': total_participants,
-        'todays_events': todays_events, 
+        'todays_events': todays_events,
         'upcoming_events': upcoming_events_count,
         'past_events': past_events_count,
         'show_event': events,
@@ -37,123 +102,73 @@ def dashboard(request):
     return render(request, "dashboard.html", context)
 
 def create_event(request):
-    event_form = EventModelForm() 
+    event_form = EventModelForm()
 
     if request.method == "POST":
-        event_form = EventModelForm(request.POST)
+        event_form = EventModelForm(request.POST,request.FILES)
         if event_form.is_valid():
             event_form.save()
             messages.success(request, "Event Created Successfully")
             return redirect("event_list")
         return render(request, 'event_form.html', {'form': event_form})
+
     return render(request, 'event_form.html', {'form': event_form})
 
 
-def event_list(request):
-    search = request.GET.get('search', '')
-    if search:
-        events = Event.objects.filter(Q(name__icontains=search) | Q(location__icontains=search)).select_related('category').prefetch_related('participants')
-    else:
-        events = Event.objects.select_related('category').prefetch_related('participants').all()
-
-    return render(request, 'event_list.html', { 'events': events,'search': search})
-
-def update_event(request,id):
+def update_event(request, id):
     event = Event.objects.get(id=id)
     event_form = EventModelForm(instance=event)
 
-    if request.method =="POST":
-        event_form = EventModelForm(request.POST,instance=event)
-
+    if request.method == "POST":
+        event_form = EventModelForm(request.POST, instance=event)
         if event_form.is_valid():
             event_form.save()
             messages.success(request, "Event Updated Successfully")
             return redirect('event_list')
-           
         return render(request, 'event_form.html', {'form': event_form})
+
     return render(request, 'event_form.html', {'form': event_form})
 
-def delete_event(request,id):
+def delete_event(request, id):
     if request.method == "POST":
         event = Event.objects.get(id=id)
         event.delete()
         messages.success(request, 'Event Deleted Successfully')
         return redirect('event_list')
-    
-    
-def create_participate(request):
-    participant_form = ParticipantModelForm()
-
-    if request.method =="POST":
-        participant_form = ParticipantModelForm(request.POST)
-
-        if participant_form.is_valid():
-            participant_form.save()
-            messages.success(request,"Participant Create Successfully")
-            return redirect("participant_list")
-        return render(request, 'participant_form.html', {'form': participant_form})
-    return render(request, 'participant_form.html', {'form': participant_form})
-
-def participant_list(request):
-    participants = Participant.objects.prefetch_related('events').all()
-    return render(request, 'participant_list.html', {'participants': participants})
-
-def update_participant(request,id):
-    participant = Participant.objects.get(id=id)
-    participant_form = ParticipantModelForm(instance=participant)
-
-    if request.method == "POST":
-        participant_form = ParticipantModelForm(request.POST,instance=participant)
-        if participant_form.is_valid():
-            participant_form.save()
-            messages.success(request,"Participant Update Succesfully")
-            return redirect('participant_list')
-        return render(request, 'participant_form.html', {'form': participant_form})
-    return render(request, 'participant_form.html', {'form': participant_form}) 
-     
-            
-
-def delete_participate(request,id):
-    if request.method =="POST":
-        participant= Participant.objects.get(id=id)
-        participant.delete()
-        messages.success(request, 'Participant Deleted Successfully')
-        return redirect('participant_list')
-
-
 
 def create_category(request):
     category_form = CategoryModelForm()
-    if request.method =='POST':
+    if request.method == 'POST':
         category_form = CategoryModelForm(request.POST)
         if category_form.is_valid():
             category_form.save()
+            messages.success(request, "Category Created Successfully")
             return redirect('category_list')
         return render(request, 'category_form.html', {'form': category_form})
     return render(request, 'category_form.html', {'form': category_form})
-    
+
 def category_list(request):
-    categories = Category.objects.all()  
+    categories = Category.objects.all()
     return render(request, 'category_list.html', {'categories': categories})
 
-def update_category(request,id):
+def update_category(request, id):
     category = Category.objects.get(id=id)
     category_form = CategoryModelForm(instance=category)
-    if request.method =="POST":
-        category_form = CategoryModelForm(request.POST,instance=category)
+    if request.method == "POST":
+        category_form = CategoryModelForm(request.POST, instance=category)
         if category_form.is_valid():
             category_form.save()
-            messages.success(request,"Category Update Successfully")
+            messages.success(request, "Category Updated Successfully")
             return redirect('category_list')
         return render(request, 'category_form.html', {'form': category_form})
     return render(request, 'category_form.html', {'form': category_form})
 
-def delete_category(request,id):
-    if request.method=="POST":
+def delete_category(request, id):
+    if request.method == "POST":
         category = Category.objects.get(id=id)
         category.delete()
         messages.success(request, 'Category Deleted Successfully')
         return redirect('category_list')
-    
-def home(request):
-    return render(request,'home.html')
+
+def first_home(request):
+    return render(request, 'first_home.html')

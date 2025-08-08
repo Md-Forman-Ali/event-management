@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Event Management{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow p-4 flex justify-between items-center max-w-7xl mx-auto w-full">
+    <div>
+      <a href="{% url 'home' %}" class="text-xl font-bold text-sky-700 hover:text-sky-900">Event Management</a>
+    </div>
+    <div class="flex items-center gap-6">
+      {% if request.user.is_authenticated %}
+        {% include "logged.html" %}
+        {% if user_role == 'Admin' %}
+          <a href="{% url 'admin_dashboard' %}" class="text-blue-600 hover:underline">Go To Admin Dashboard</a>
+          <a href="{% url 'group-list' %}" class="text-blue-600 hover:underline">Groups</a>
+          <a href="{% url 'create-group' %}" class="text-blue-600 hover:underline">Create Group</a>
+          <a href="{% url 'assign-role' user.id %}" class="text-blue-600 hover:underline">Assign Role </a>
+
+        {% elif user_role == 'Organizer' %}
+          <a href="{% url 'organizer_dashboard' %}" class="text-blue-600 hover:underline">Go To Organizer Dashboard</a>
+        {% elif user_role == 'Participant' %}
+          <a href="{% url 'participant_dashboard' %}" class="text-blue-600 hover:underline">Go To Participant Dashboard</a>
+        {% endif %}
+      {% else %}
+        {% include "non_logged.html" %}
+    
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-10 text-center">
+    {% block content %}
+    {% endblock content %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white text-center py-4 shadow-inner mt-auto">
+    <p class="text-gray-600">&copy; 2025 Event Management. All rights reserved.</p>
+  </footer>
+
+  <!-- JS for menu toggling -->
+  <script>
+    const menuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    if (menuButton && mobileMenu) {
+      menuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+
+    const userMenuButton = document.getElementById('user-menu-button');
+    const userMenu = document.getElementById('user-menu');
+
+    if (userMenuButton && userMenu) {
+      userMenuButton.addEventListener('click', () => {
+        userMenu.classList.toggle('hidden');
+      });
+
+      window.addEventListener('click', (e) => {
+        if (!userMenuButton.contains(e.target)) {
+          userMenu.classList.add('hidden');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

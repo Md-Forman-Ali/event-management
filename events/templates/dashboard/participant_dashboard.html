@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-3xl mx-auto p-6">
+
+  <div class="flex justify-end">
+  <a href="{% url 'event_list' %}" class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">
+    View All Events</a></div>
+
+
+  <h2 class="text-3xl font-bold text-center text-gray-800 my-6">Your RSVP Events Here </h2>
+
+  {% if rsvp_events %}
+    <ul class="space-y-4">
+      {% for event in rsvp_events %}
+        <li class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900">{{ event.name }}</h3>
+            <p class="text-sm text-gray-500">{{ event.location }} • {{ event.time }}</p>
+          </div>
+          <span class="inline-block bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full">
+            {{ event.date }}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="bg-yellow-100 text-yellow-800 px-4 py-3 rounded mt-6 text-center">
+        No Event RSVP Found 
+    </div>
+  {% endif %}
+
+</div>
+{% endblock content %}

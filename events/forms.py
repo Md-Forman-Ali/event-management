@@ -1,5 +1,5 @@
 from django import forms
-from events.models import Event, Participant, Category
+from events.models import Event, Category
 
 class StyledFormMixin:
     default_classes = "border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -38,7 +38,10 @@ class StyledFormMixin:
                 field.widget.attrs.update({
                 'class': self.default_classes
                 })
-
+            elif isinstance(field.widget, forms.ClearableFileInput):
+                field.widget.attrs.update({
+                    'class': self.default_classes
+                })
             else :
                 field.widget.attrs.update({
                     'class' : self.default_classes
@@ -50,6 +53,7 @@ class StyledFormMixin:
 class EventModelForm(StyledFormMixin, forms.ModelForm):
     class Meta:
         model = Event
+        exclude = ['participants']
         fields = '__all__'
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
@@ -62,16 +66,6 @@ class EventModelForm(StyledFormMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.apply_styled_widgets()
 
-class ParticipantModelForm(StyledFormMixin, forms.ModelForm):
-    class Meta:
-        model = Participant
-        fields = '__all__'
-        widgets ={
-          'events': forms.CheckboxSelectMultiple(),
-        }
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.apply_styled_widgets()
 
 class CategoryModelForm(StyledFormMixin, forms.ModelForm):
     class Meta:

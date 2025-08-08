@@ -16,7 +16,7 @@ SECRET_KEY = 'django-insecure-=5ghst_hzailb@&o85#r0*@)vx2yn44w(faw0@pa5^-hrm%6a5
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED__ORIGINS = ['https://*.onrender.com','http://127.0.0.1:8000','https://event-management-e9ne.onrender.com']
+CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com','http://127.0.0.1:8000','https://event-management-e9ne.onrender.com']
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_DOMAIN = '.onrender.com'
@@ -82,12 +82,18 @@ WSGI_APPLICATION = 'event_management.wsgi.application'
 # }
 
 
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         # Replace this value with your local database's connection string.
+#         default='postgresql://event_manage_db_stsh_user:eJQoojfHghJf6trY2uo7fdu0V2KJcDaI@dpg-d1kkiofdiees73elnhn0-a.oregon-postgres.render.com/event_manage_db_stsh',
+#         conn_max_age=600
+#     )
+# }
+
+#FOR SUPABASE
+
 DATABASES = {
-    'default': dj_database_url.config(
-        # Replace this value with your local database's connection string.
-        default='postgresql://event_manage_db_stsh_user:eJQoojfHghJf6trY2uo7fdu0V2KJcDaI@dpg-d1kkiofdiees73elnhn0-a.oregon-postgres.render.com/event_manage_db_stsh',
-        conn_max_age=600
-    )
+    'default': dj_database_url.parse(config('DATABASE_URL'), ssl_require=True)
 }
 
 
@@ -145,15 +151,17 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST')
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast = bool )
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast = bool)
 EMAIL_PORT = config('EMAIL_PORT')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
