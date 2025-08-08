@@ -1,54 +1,17 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Event List</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100  p-6">
-
-  <nav class="bg-white border-b border-gray-200 mb-6">
-
-  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-    <div class="w-full md:w-auto" id="navbar-default">
-      <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white">
-        <li>
-          <a href="{% url 'event_list' %}" class="block py-2 px-3 text-blue-500 rounded-sm hover:text-blue-500 hover:bg-transparent">Event</a>
-        </li>
-        <li>
-          <a href="{% url 'category_list' %}" class="block py-2 px-3 text-blue-500 rounded-sm hover:text-blue-500 hover:bg-transparent">Category</a>
-        </li>
-        <li>
-          <a href="{% url 'participant_list' %}" class="block py-2 px-3 text-blue-500 rounded-sm hover:text-blue-500 hover:bg-transparent">Participate</a>
-        </li>
-        <li>
-          <a href="{% url 'dashboard' %}" class="block py-2 px-3 text-blue-500 rounded-sm hover:text-blue-500 hover:bg-transparent">Go To Dashboard</a>
-        </li>
-      </ul>
-    </div>
-       <div class="flex space-x-4">
-    
-        <a href="{% url 'create_participant' %}" class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">Create Participant</a>
-        <a href="{% url 'create_event' %}" class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">Create Event</a>
-         <a href="{% url 'create_category' %}" class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">Create Category</a>
-     </div>
-  </div>
-  </div>
-</nav>
+{% extends "base.html" %}
+{% block content %}
+<body class="bg-gray-100 p-6">
 
 
-
-  <div class=" mx-auto bg-white p-6 rounded shadow-md">
+  <div class="mx-auto bg-white p-6 rounded shadow-md max-w-4xl">
 
     {% if messages %}
       <div class="mb-6">
         {% for message in messages %}
-          <div
-            class="p-4 rounded mb-3
+          <div class="p-4 rounded mb-3
             {% if message.tags == 'success' %} bg-green-200 text-green-800
-            
+            {% elif message.tags == 'error' %} bg-red-200 text-red-800
+            {% elif message.tags == 'warning' %} bg-yellow-200 text-yellow-800
             {% endif %}">
             {{ message }}
           </div>
@@ -60,36 +23,60 @@
 
     <ul>
       {% for event in events %}
-        <li class="mb-4 border border-gray-300 rounded p-4">
+        <li class="mb-6 border border-gray-300 rounded p-4">
           <h2 class="text-xl font-semibold mb-1">{{ event.name }}</h2>
           <p class="text-gray-600 mb-1">Category: {{ event.category.name }}</p>
           <p class="text-gray-600">Participants: {{ event.participants.count }}</p>
           <p class="text-gray-600">Description: {{ event.description }}</p>
-          <p class="text-gray-600">Location: {{ event.loaction }}</p>
+          <p class="text-gray-600">Location: {{ event.location }}</p>
           <p class="text-gray-600">Date: {{ event.date }}</p>
           <p class="text-gray-600 mb-3">Time: {{ event.time }}</p>
+          <p class="text-gray-600 mb-3">Image:</p>
+          {% if event.image %}
+            <img src="{{ event.image.url }}" alt="{{ event.name }}" class="w-48 h-48 object-cover rounded mb-3" />
+          {% else %}
+            <p class="text-gray-500 italic">No image upload</p>
+          {% endif %}
 
-    
+         
+
           <div class="flex space-x-3">
-            <a href="{% url 'update_event' event.id %}" 
-               class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+            <a href="{% url 'update_event' event.id %}" class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
               Edit
             </a>
-            <form action="{% url 'delete_event' event.id %}" method="POST">
+
+            <form action="{% url 'delete_event' event.id %}" method="POST" class="inline">
               {% csrf_token %}
-              <button type="submit" 
-                    class="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-700">
+              <button type="submit" class="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-700">
                 Delete
               </button>
             </form>
+
+            {% if user.is_authenticated %}
+              {% if not event.user_has_rsvped %}
+                <form action="{% url 'rsvp_event' event.id %}" method="post" class="inline">
+                  {% csrf_token %}
+                  <button type="submit" class="px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700">
+                    RSVP
+                  </button>
+                </form>
+              {% else %}
+                <button class="px-4 py-1 bg-gray-400 text-white rounded cursor-not-allowed" disabled>
+                  RSVP
+                </button>
+              {% endif %}
+            {% else %}
+              <a href="{% url 'sign-in' %}" class="px-4 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+                Login to RSVP
+              </a>
+            {% endif %}
           </div>
         </li>
       {% empty %}
-        <li class="text-center text-gray-500">No events Found</li>
+        <li class="text-center text-gray-500">No events found.</li>
       {% endfor %}
     </ul>
 
   </div>
 
-</body>
-</html>
+{% endblock content %}

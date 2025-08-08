@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ event.name }} - Details</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-3xl mx-auto p-6">
+
+    {% if messages %}
+      <div class="mb-6">
+        {% for message in messages %}
+          <div class="mb-2 p-4 rounded bg-blue-100 text-blue-800">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <h1 class="text-4xl font-bold mb-4">{{ event.name }}</h1>
+
+    <ul class="mb-6 space-y-3 text-lg">
+      <li><span class="font-semibold">Category:</span> {{ event.category.name }}</li>
+      <li><span class="font-semibold">Participants:</span> {{ event.participants.count }}</li>
+      <li><span class="font-semibold">Description:</span> {{ event.description }}</li>
+      <li><span class="font-semibold">Location:</span> {{ event.location }}</li>
+      <li><span class="font-semibold">Date:</span> {{ event.date }}</li>
+      <li><span class="font-semibold">Time:</span> {{ event.time }}</li>
+    </ul>
+
+    {% if user_has_rsvped %}
+      <p class="text-green-600 font-semibold mb-6">You have already RSVP to this event.</p>
+    {% else %}
+      <form action="{% url 'rsvp_event' event.id %}" method="post" class="mb-6">
+        {% csrf_token %}
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+          RSVP
+        </button>
+      </form>
+    {% endif %}
+
+    <a href="{% url 'event_list' %}" class="inline-block text-blue-600 hover:underline"> Back to Event List
+    </a>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-[1000px] mx-auto p-6">
+  <h1 class="text-3xl font-bold text-center mb-8">Organizer Dashboard</h1>
+
+  {% if user_role %}
+    <p class="text-center text-gray-500 mb-6">You are logged in as: {{ user_role }}</p>
+  {% endif %}
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+    <a href="{% url 'event_list' %}" class="bg-blue-500 text-white text-center py-4 rounded hover:bg-blue-600">
+      Manage Events
+    </a>
+    <a href="{% url 'category_list' %}" class="bg-blue-500 text-white text-center py-4 rounded hover:bg-blue-600">
+      Manage Categories
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <a href="{% url 'create_event' %}" class="bg-green-600 text-white text-center py-4 rounded hover:bg-green-700">
+      Create New Event
+    </a>
+    <a href="{% url 'create_category' %}" class="bg-green-600 text-white text-center py-4 rounded hover:bg-green-700">
+      Create New Category
+    </a>
+    <a href="{% url 'home' %}" class="bg-green-600 text-white text-center py-4 rounded hover:bg-green-700">
+      Go To Home
+    </a>
+  </div>
+</div>
+{% endblock content %}

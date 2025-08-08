@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-3xl font-semibold text-sky-700">Welcome to Event Management</h1>
+    <p class="mt-4 text-gray-700">Organize and participate in events seamlessly.</p>
+
+    <!-- Grid Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+      
+      <!-- Admin Card -->
+      <div class="bg-white shadow-lg rounded-lg p-6 border-t-4 text-left">
+        <h2 class="text-xl font-bold text-red-600 mb-4">Admin</h2>
+        <ul class="list-disc pl-5 text-gray-700 space-y-2">
+          <li>Full access to all features.</li>
+          <li>Only the admin can change roles.</li>
+          <li>Create and manage groups.</li>
+          <li>Delete groups.</li>
+          <li>Delete participants.</li>
+        </ul>
+      </div>
+
+      <!-- Organizer Card -->
+      <div class="bg-white shadow-lg rounded-lg p-6 border-t-4 text-left">
+        <h2 class="text-xl font-bold text-blue-600 mb-4">Organizer</h2>
+        <ul class="list-disc pl-5 text-gray-700 space-y-2">
+          <li>Can create events.</li>
+          <li>Update existing events.</li>
+          <li>Delete events.</li>
+          <li>Create and manage categories.</li>
+        </ul>
+      </div>
+
+      <!-- Participant Card -->
+      <div class="bg-white shadow-lg rounded-lg p-6 border-t-4 text-left">
+        <h2 class="text-xl font-bold text-green-600 mb-4">Participant</h2>
+        <ul class="list-disc pl-5 text-gray-700 space-y-2">
+          <li>Participants can only view events.</li>
+        </ul>
+      </div>
+
+    </div>
+  {% endblock content %}

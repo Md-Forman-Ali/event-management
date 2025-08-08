@@ -1,12 +1,5 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Category Form </title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+{% extends "base.html" %}
+{% block content %}
 <body class="bg-gray-100 min-h-screen">
   <nav class="bg-white border-b border-gray-200">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -18,18 +11,19 @@
         <li>
           <a href="{% url 'category_list' %}" class="block py-2 px-3 text-blue-500 rounded-sm hover:text-blue-500 hover:bg-transparent">Category</a>
         </li>
-        <li>
-          <a href="{% url 'participant_list' %}" class="block py-2 px-3 text-blue-500 rounded-sm hover:text-blue-500 hover:bg-transparent">Participate</a>
-        </li>
+        
         <li>
           <a href="{% url 'dashboard' %}" class="block py-2 px-3 text-blue-500 rounded-sm hover:text-blue-500 hover:bg-transparent">Go To Dashboard</a>
+        </li>
+        <li>
+          <a href="{% url 'home' %}" class="block py-2 px-3 text-blue-500 rounded-sm hover:text-blue-500 hover:bg-transparent">Go To Home</a>
         </li>
       </ul>
     </div>
     <div class="flex space-x-4">
     
-        <a href="{% url 'create_participant' %}" class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">Create Participant</a>
         <a href="{% url 'create_event' %}" class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">Create Event</a>
+        <a href="{% url 'create_category' %}" class="block py-2 px-3 text-blue-500 rounded-sm hover:text-blue-500 hover:bg-transparent">Create Category</a>
 
      </div>
   </div>
@@ -56,5 +50,4 @@
     </form>
     
    </div>
-</body>
-</html>
+{% endblock content %}
