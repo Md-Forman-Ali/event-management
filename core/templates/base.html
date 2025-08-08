@@ -21,6 +21,7 @@
           <a href="{% url 'group-list' %}" class="text-blue-600 hover:underline">Groups</a>
           <a href="{% url 'create-group' %}" class="text-blue-600 hover:underline">Create Group</a>
           <a href="{% url 'assign-role' user.id %}" class="text-blue-600 hover:underline">Assign Role </a>
+          <a href="{% url 'user-list' %}" class="text-blue-600 hover:underline">User List </a>
 
         {% elif user_role == 'Organizer' %}
           <a href="{% url 'organizer_dashboard' %}" class="text-blue-600 hover:underline">Go To Organizer Dashboard</a>
