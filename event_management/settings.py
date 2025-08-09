@@ -14,31 +14,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=5ghst_hzailb@&o85#r0*@)vx2yn44w(faw0@pa5^-hrm%6a5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True 
 
-# ALLOWED_HOSTS = ['*']
-# CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com','http://127.0.0.1:8000','https://event-management-e9ne.onrender.com']
-# CSRF_COOKIE_SECURE = False
-# SESSION_COOKIE_SECURE = False
+ALLOWED_HOSTS = [
+    'event-management-e9ne.onrender.com',
+    'event-management-2-5ldo.onrender.com',
+    '127.0.0.1',
+    'localhost'
+]
 
-# CSRF_COOKIE_DOMAIN = '.onrender.com'
+CSRF_TRUSTED_ORIGINS = [
+    'https://event-management-e9ne.onrender.com',
+    'https://event-management-2-5ldo.onrender.com',
+    'http://127.0.0.1:8000'
+]
 
 
-ALLOWED_HOSTS = ['*']
 
-if 'RENDER' in os.environ:
-    CSRF_TRUSTED_ORIGINS = [
-        'https://event-management-e9ne.onrender.com',
-        
-    ]
-    CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_DOMAIN = None  
-else:
-    CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000']
-    CSRF_COOKIE_SECURE = False
-    SESSION_COOKIE_SECURE = False
-    CSRF_COOKIE_DOMAIN = None
+CSRF_COOKIE_SECURE = False  
+SESSION_COOKIE_SECURE = False  
+
+
+
 
 
 # Application definition
