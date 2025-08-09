@@ -161,6 +161,8 @@ def create_group(request):
 def group_list(request):
     groups = Group.objects.prefetch_related('permissions').all()
     return render(request,'admin/group_list.html', {'groups': groups})
+
+@user_passes_test(is_admin, login_url='no_permission')
 def user_list(request):
     users = User.objects.all()
     return render(request, 'admin/user_list.html', {'users': users})
