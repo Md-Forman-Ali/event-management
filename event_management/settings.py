@@ -27,16 +27,19 @@ SECRET_KEY = 'django-insecure-=5ghst_hzailb@&o85#r0*@)vx2yn44w(faw0@pa5^-hrm%6a5
 ALLOWED_HOSTS = ['*']
 
 if 'RENDER' in os.environ:
-    CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com', 'https://event-management-e9ne.onrender.com']
+    CSRF_TRUSTED_ORIGINS = [
+        'https://event-management-e9ne.onrender.com',
+        
+    ]
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_DOMAIN = '.onrender.com'
+    CSRF_COOKIE_DOMAIN = None  
 else:
-    
     CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000']
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_DOMAIN = None
+
 
 # Application definition
 
