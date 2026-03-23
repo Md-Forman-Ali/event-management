@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from events.models import  Event,Category,Rsvp
+from events.models import  Event,Category,Rsvp #type : ingore 
 
 admin.site.register(Category)
 admin.site.register(Event)

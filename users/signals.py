@@ -8,19 +8,25 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
 @receiver(post_save, sender = User)
 def send_activation_email (sender, instance, created, **kwargs):
     if created :
         token = default_token_generator.make_token(instance)
-        activation_url = f"{settings.FRONTEND_URL}/users/activate/{instance.id}/{token}"
-        subject = "Active Your Account "
-        message = f"Hi {instance.username},\n\nPlease activate your account by clicking the link below:\n{activation_url}\n\n""Thank you!"
-
-        recipient_list = [instance.email]
+        activation_url = f"{settings.FRONTEND_URL}users/activate/{instance.id}/{token}"
+        subject = "Activate Your Account - EventMaster"
+        
+        context = {
+            'user': instance,
+            'activation_url': activation_url,
+        }
+        html_message = render_to_string('registration/activation_email.html', context)
+        plain_message = strip_tags(html_message)
 
         try:
-            
-            send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list, fail_silently=False)
+            send_mail(subject, plain_message, settings.EMAIL_HOST_USER, [instance.email], html_message=html_message, fail_silently=False)
         except Exception as e :
             print(f"Failed to send mail {instance.email}: {str(e)}")
 

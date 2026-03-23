@@ -1,91 +1,96 @@
 {% extends "base.html" %}
+{% load user_filters %}
 {% load static %}
 
 {% block content %}
-<div class="bg-gray-50 min-h-screen py-10">
+<div class="bg-gray-50/50 min-h-screen pt-12 pb-24">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-    <div class="md:flex md:items-center md:justify-between mb-8">
-      <div class="flex-1 min-w-0">
-        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-          Participants List
-        </h2>
-        <p class="mt-1 text-sm text-gray-500">Manage all registered participants for your events.</p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8 animate-fade-in">
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+            <span class="inline-block py-1 px-3 rounded-full bg-accent-50 text-accent-600 text-[10px] font-black uppercase tracking-widest">Directory</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ participants.count }} registered records</span>
+        </div>
+        <h1 class="text-5xl font-black text-slate-900 tracking-tight">Access <span class="text-primary-600">Registry</span></h1>
+        <p class="text-slate-500 mt-4 max-w-lg">Manage and monitor all platform participants. Oversee registration statuses and event engagement across the entire system.</p>
       </div>
-      <div class="mt-4 flex md:mt-0 md:ml-4">
-        <a href="{% url 'create_participant' %}"
-          class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-          Add Participant
+      
+      <div class="animate-slide-in">
+        <a href="{% url 'create_participant' %}" class="btn-primary">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+          Add Record
         </a>
       </div>
     </div>
 
-    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-      <ul class="divide-y divide-gray-200">
-        {% for participant in participants %}
-        <li>
-          <div class="px-4 py-4 sm:px-6 hover:bg-gray-50 transition duration-150 ease-in-out">
-            <div class="flex items-center justify-between">
-              <div class="sm:flex sm:items-center sm:justify-between w-full">
-                <div class="truncate">
-                  <div class="flex text-sm">
-                    <p class="font-medium text-indigo-600 truncate">{{ participant.name }}</p>
-                    <p class="ml-1 flex-shrink-0 font-normal text-gray-500">
-                      &lt;{{ participant.email }}&gt;
-                    </p>
-                  </div>
-                  <div class="mt-2 flex">
-                    <div class="flex items-center text-sm text-gray-500">
-                      <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                        </path>
-                      </svg>
-                      <p>
-                        Events joined: <span class="font-medium text-gray-900">{{ participant.events.count }}</span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div class="mt-4 flex-shrink-0 sm:mt-0 sm:ml-5">
-                  <div class="flex space-x-3">
-                    <a href="{% url 'update_participant' participant.id %}"
-                      class="inline-flex items-center px-3 py-1.5 border border-indigo-200 text-xs font-medium rounded text-indigo-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                      Edit
-                    </a>
-                    <form action="{% url 'delete_participant' participant.id %}" method="POST"
-                      onsubmit="return confirm('Are you sure you want to remove this participant?');">
-                      {% csrf_token %}
-                      <button type="submit"
-                        class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                        Remove
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </li>
-        {% empty %}
-        <li class="px-4 py-12 sm:px-6 text-center">
-          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
-            </path>
-          </svg>
-          <h3 class="mt-2 text-sm font-medium text-gray-900">No participants yet</h3>
-          <p class="mt-1 text-sm text-gray-500">Get started by creating a new participant.</p>
-          <div class="mt-6">
-            <a href="{% url 'create_participant' %}"
-              class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              Add Participant
-            </a>
-          </div>
-        </li>
-        {% endfor %}
-      </ul>
+    <div class="glass-card rounded-[2.5rem] overflow-hidden shadow-2xl shadow-slate-200/50">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50/50">
+                        <th class="px-8 py-5">Participant Identity</th>
+                        <th class="px-8 py-5">Engagement</th>
+                        <th class="px-8 py-5">Status</th>
+                        <th class="px-8 py-5 text-right">Operations</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 italic font-medium">
+                    {% for participant in participants %}
+                    <tr class="group hover:bg-slate-50/50 transition-colors">
+                        <td class="px-8 py-6">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-300 font-black text-lg group-hover:bg-primary-50 group-hover:text-primary-600 group-hover:border-primary-100 transition-all uppercase">
+                                    {{ participant.name|slice:":1" }}
+                                </div>
+                                <div>
+                                    <div class="font-bold text-slate-900 group-hover:text-primary-600 transition-colors">{{ participant.name }}</div>
+                                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{{ participant.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl font-black text-slate-900">{{ participant.events.count }}</span>
+                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Events joined</span>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6">
+                            <span class="status-badge bg-accent-50 text-accent-500 flex items-center gap-1.5 w-fit">
+                                <span class="w-1 h-1 rounded-full bg-accent-500"></span>
+                                Registered
+                            </span>
+                        </td>
+                        <td class="px-8 py-6 text-right">
+                            <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <a href="{% url 'update_participant' participant.id %}" class="p-3 rounded-xl bg-slate-50 text-slate-400 hover:bg-primary-50 hover:text-primary-600 transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                </a>
+                                <form action="{% url 'delete_participant' participant.id %}" method="POST" class="inline" onsubmit="return confirm('Remove this participant record?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="p-3 rounded-xl bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-all">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-8 py-24 text-center">
+                            <div class="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
+                                <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1H3v-1z"></path></svg>
+                            </div>
+                            <h3 class="text-2xl font-black text-slate-900 mb-2">Registry is empty</h3>
+                            <p class="text-slate-500 mb-8 max-w-xs mx-auto">No participant records found in the system. Add your first record to begin management.</p>
+                            <a href="{% url 'create_participant' %}" class="btn-primary">Initialize Record</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
   </div>
 </div>

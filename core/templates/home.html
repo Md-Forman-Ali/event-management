@@ -1,167 +1,195 @@
 {% extends "base.html" %}
 {% load static %}
+{% load custom_filters %}
 
 {% block content %}
-<div class="bg-gray-50">
-  <!-- Hero Section -->
-  <section class="relative bg-white overflow-hidden">
-    <div class="max-w-7xl mx-auto">
-      <div class="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
-        <svg class="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-white transform translate-x-1/2"
-          fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <polygon points="50,0 100,0 50,100 0,100" />
-        </svg>
+<div class="mesh-bg min-h-screen">
+    <!-- Hero Section -->
+    <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden px-4">
+        <!-- Floating Decorative Elements -->
+        <div class="absolute top-20 left-10 w-64 h-64 bg-primary-600/10 rounded-full blur-3xl animate-float"></div>
+        <div class="absolute bottom-20 right-10 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl animate-float" style="animation-delay: 2s"></div>
+        
+        <div class="max-w-7xl mx-auto w-full relative z-10">
+            <div class="text-center">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 backdrop-blur-md border border-white/20 shadow-sm mb-8 animate-fade-in">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
+                    </span>
+                    <span class="text-xs font-bold text-slate-600 uppercase tracking-widest">Join {{ total_participants_count }}+ Event Enthusiasts</span>
+                </div>
+                
+                <h1 class="text-6xl md:text-8xl font-black text-slate-900 tracking-tighter mb-8 leading-[0.9] animate-fade-in-up">
+                    Crafting <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-accent-600">Legendary</span> <br>
+                    Moments Together.
+                </h1>
+                
+                <p class="max-w-2xl mx-auto text-xl text-slate-500 mb-12 font-medium leading-relaxed animate-fade-in-up" style="animation-delay: 0.1s">
+                    The ultra-premium event management platform for creators and explorers. 
+                    Organize, RSVP, and discover unforgettable experiences in seconds.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-6 animate-fade-in-up" style="animation-delay: 0.2s">
+                    <a href="{% url 'event_list' %}" class="btn-primary py-4 px-10 text-lg shadow-glow hover:shadow-primary-600/40">
+                        Explore Live Events
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                    </a>
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'sign-up' %}" class="btn-secondary py-4 px-10 text-lg">
+                        Start Your Journey
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+            <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7-7-7m14-8l-7 7-7-7"></path></svg>
+        </div>
+    </section>
 
-        <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-          <div class="sm:text-center lg:text-left animate-fade-in-up">
-            <h1 class="text-4xl tracking-tight font-extrabold text-slate-900 sm:text-5xl md:text-6xl">
-              <span class="block xl:inline">Manage your events</span>
-              <span
-                class="block text-primary-600 xl:inline bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-secondary-500">seamlessly</span>
-            </h1>
-            <p
-              class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0 font-light">
-              Organize, track, and participate in events with ease. From corporate conferences to intimate meetups,
-              EventMaster provides the tools you need to succeed.
-            </p>
-            <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start gap-3">
-              <div class="rounded-md shadow">
-                <a href="{% url 'event_list' %}"
-                  class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 md:py-4 md:text-lg transition transform hover:-translate-y-1 shadow-lg hover:shadow-primary-500/30">
-                  Explore Events
+    <!-- Stats Section -->
+    <section class="py-24 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="glass-card rounded-[2.5rem] p-8 text-center animate-fade-in-up">
+                    <div class="text-5xl font-black text-primary-600 mb-2">{{ total_events_count }}</div>
+                    <div class="text-sm font-bold text-slate-400 uppercase tracking-widest">Events Hosted</div>
+                </div>
+                <div class="glass-card rounded-[2.5rem] p-8 text-center animate-fade-in-up" style="animation-delay: 0.1s">
+                    <div class="text-5xl font-black text-accent-500 mb-2">{{ total_participants_count }}</div>
+                    <div class="text-sm font-bold text-slate-400 uppercase tracking-widest">Active Members</div>
+                </div>
+                <div class="glass-card rounded-[2.5rem] p-8 text-center animate-fade-in-up" style="animation-delay: 0.2s">
+                    <div class="text-5xl font-black text-slate-900 mb-2">24/7</div>
+                    <div class="text-sm font-bold text-slate-400 uppercase tracking-widest">Premium Support</div>
+                </div>
+                <div class="glass-card rounded-[2.5rem] p-8 text-center animate-fade-in-up" style="animation-delay: 0.3s">
+                    <div class="text-5xl font-black text-purple-600 mb-2">100%</div>
+                    <div class="text-sm font-bold text-slate-400 uppercase tracking-widest">Safe & Secure</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Events Section -->
+    <section class="py-32 bg-white/30 backdrop-blur-sm relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                <div class="animate-fade-in">
+                    <h2 class="text-4xl font-black text-slate-900 tracking-tight">Featured <span class="text-primary-600">Experiences</span></h2>
+                    <p class="text-slate-500 mt-2 text-lg font-medium">Handpicked events trending right now</p>
+                </div>
+                <a href="{% url 'event_list' %}" class="group flex items-center text-primary-600 font-bold hover:text-primary-700 transition">
+                    View all events
+                    <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
                 </a>
-              </div>
-              <div class="mt-3 sm:mt-0">
-                {% if not user.is_authenticated %}
-                <a href="{% url 'sign-up' %}"
-                  class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-primary-700 bg-primary-50 hover:bg-primary-100 md:py-4 md:text-lg transition">
-                  Get Started
-                </a>
-                {% endif %}
-              </div>
             </div>
-          </div>
-        </main>
-      </div>
-    </div>
-    <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-      <img class="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full"
-        src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1600&q=80"
-        alt="Conference event">
-    </div>
-  </section>
 
-  <!-- Features Section -->
-  <section class="py-16 bg-white relative">
-    <div class="absolute inset-0 bg-gradient-to-br from-primary-50/50 to-white/0 pointer-events-none"></div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <div class="lg:text-center mb-16">
-        <h2 class="text-base text-primary-600 font-bold tracking-wide uppercase">Features</h2>
-        <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-          Everything you need to succeed
-        </p>
-        <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-          Our platform provides comprehensive tools for organizers and participants, tailored to modern event needs.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-        <!-- Feature 1 -->
-        <div
-          class="group relative p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-          <div
-            class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-primary-50 rounded-full opacity-50 group-hover:scale-110 transition-transform">
-          </div>
-          <div class="relative">
-            <div
-              class="flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 text-white shadow-lg mb-6">
-              <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-              </svg>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                {% for event in featured_events %}
+                <div class="group bg-white rounded-[2.5rem] shadow-premium hover:shadow-premium-hover transition-all duration-700 overflow-hidden flex flex-col border border-gray-100 animate-fade-in-up" style="animation-delay: {{ forloop.counter0|multiply:0.1 }}s">
+                    <div class="relative overflow-hidden aspect-[16/10]">
+                        {% if event.image %}
+                        <img src="{{ event.image.url }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000" alt="{{ event.name }}">
+                        {% else %}
+                        <div class="w-full h-full bg-slate-50 flex items-center justify-center text-slate-200"><svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
+                        {% endif %}
+                        <div class="absolute top-4 left-4">
+                            <span class="status-badge bg-white/90 backdrop-blur-md text-primary-600 !py-1 !px-3 shadow-sm">{{ event.category.name }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-8">
+                        <div class="text-sm font-bold text-accent-500 mb-2">{{ event.date|date:"F d, Y" }}</div>
+                        <h3 class="text-2xl font-black text-slate-900 mb-4 group-hover:text-primary-600 transition-colors">{{ event.name }}</h3>
+                        <p class="text-slate-500 text-sm mb-6 line-clamp-2">{{ event.description }}</p>
+                        
+                        <div class="flex items-center justify-between pt-6 border-t border-slate-100">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold text-xs">{{ event.participant_count }}</div>
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Going</span>
+                            </div>
+                            <a href="{% url 'event_detail' event.id %}" class="p-2 rounded-xl bg-slate-50 text-slate-400 hover:bg-primary-600 hover:text-white transition-all shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-span-full py-20 text-center glass-card rounded-[2.5rem]">
+                    <p class="text-slate-400 italic">No events featured yet. Check back soon!</p>
+                </div>
+                {% endfor %}
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">Easy Discovery</h3>
-            <p class="text-gray-500 leading-relaxed">
-              Browse through a curated list of events in your area. Use advanced filters for category, location, and
-              date to find exactly what resonates with you.
-            </p>
-          </div>
         </div>
+    </section>
 
-        <!-- Feature 2 -->
-        <div
-          class="group relative p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-          <div
-            class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-secondary-50 rounded-full opacity-50 group-hover:scale-110 transition-transform">
-          </div>
-          <div class="relative">
-            <div
-              class="flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-to-br from-secondary-500 to-secondary-700 text-white shadow-lg mb-6">
-              <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
+    <!-- How It Works Section -->
+    <section class="py-32 relative group">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-24">
+                <h2 class="text-4xl font-black text-slate-900 mb-4">How it Works</h2>
+                <div class="w-20 h-1.5 bg-primary-600 mx-auto rounded-full"></div>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">Seamless RSVP</h3>
-            <p class="text-gray-500 leading-relaxed">
-              Join events with a single click. Our smart dashboard keeps track of your schedule and sends timely
-              notifications so you never miss out.
-            </p>
-          </div>
-        </div>
 
-        <!-- Feature 3 -->
-        <div
-          class="group relative p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-          <div
-            class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-primary-50 rounded-full opacity-50 group-hover:scale-110 transition-transform">
-          </div>
-          <div class="relative">
-            <div
-              class="flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 text-white shadow-lg mb-6">
-              <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
+                <!-- Step 1 -->
+                <div class="relative text-center animate-fade-in-up">
+                    <div class="w-24 h-24 bg-white rounded-3xl shadow-premium mx-auto flex items-center justify-center mb-8 transform group-hover:rotate-6 transition-transform">
+                        <svg class="w-10 h-10 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <div class="absolute top-0 right-1/4 text-8xl font-black text-slate-100 select-none -z-10">- 01</div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-4">Discover</h3>
+                    <p class="text-slate-500 leading-relaxed">Find events that match your passion using our advanced AI-driven discovery engine.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="relative text-center animate-fade-in-up" style="animation-delay: 0.1s">
+                    <div class="w-24 h-24 bg-white rounded-3xl shadow-premium mx-auto flex items-center justify-center mb-8 transform group-hover:-rotate-6 transition-transform">
+                        <svg class="w-10 h-10 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    </div>
+                    <div class="absolute top-0 right-1/4 text-8xl font-black text-slate-100 select-none -z-10">- 02</div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-4">RSVP</h3>
+                    <p class="text-slate-500 leading-relaxed">Join with a single tap. We handle all the logistics and keep you updated with live signals.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="relative text-center animate-fade-in-up" style="animation-delay: 0.2s">
+                    <div class="w-24 h-24 bg-white rounded-3xl shadow-premium mx-auto flex items-center justify-center mb-8 transform group-hover:scale-110 transition-transform">
+                        <svg class="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div class="absolute top-0 right-1/4 text-8xl font-black text-slate-100 select-none -z-10">- 03</div>
+                    <h3 class="text-2xl font-bold text-slate-900 mb-4">Participate</h3>
+                    <p class="text-slate-500 leading-relaxed">Show up and shine. Build connections and create memories that last a lifetime.</p>
+                </div>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-3">Powerful Management</h3>
-            <p class="text-gray-500 leading-relaxed">
-              Organizers get a dedicated suite of tools to create events, manage guest lists, and view real-time
-              engagement analytics.
-            </p>
-          </div>
         </div>
+    </section>
 
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA Section -->
-  <section class="bg-primary-900 relative overflow-hidden">
-    <!-- Abstract Shapes -->
-    <div class="absolute top-0 left-0 -ml-20 -mt-20 w-80 h-80 rounded-full bg-primary-800 opacity-50 blur-3xl"></div>
-    <div class="absolute bottom-0 right-0 -mr-20 -mb-20 w-80 h-80 rounded-full bg-secondary-900 opacity-30 blur-3xl">
-    </div>
-
-    <div class="max-w-4xl mx-auto text-center py-20 px-4 sm:px-6 lg:px-8 relative z-10">
-      <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
-        <span class="block">Ready to simplify your events?</span>
-        <span class="block text-primary-200 mt-2">Join EventMaster today.</span>
-      </h2>
-      <p class="mt-6 text-lg leading-relaxed text-blue-100 max-w-2xl mx-auto">
-        Join our growing community of event enthusiasts and professional organizers. It's free to get started and takes
-        less than a minute.
-      </p>
-      {% if not user.is_authenticated %}
-      <div class="mt-8 flex justify-center">
-        <a href="{% url 'sign-up' %}"
-          class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-bold rounded-lg text-primary-900 bg-white hover:bg-gray-50 md:py-4 md:text-lg transition transform hover:-translate-y-1 shadow-lg">
-          Sign up for free
-        </a>
-      </div>
-      {% endif %}
-    </div>
-  </section>
+    <!-- Call to Action -->
+    <section class="py-24 px-4 overflow-hidden relative">
+        <div class="max-w-5xl mx-auto glass-card-dark rounded-[3rem] p-12 md:p-24 text-center relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-primary-600/20 rounded-full blur-3xl -mr-32 -mt-32"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-accent-500/20 rounded-full blur-3xl -ml-32 -mb-32"></div>
+            
+            <div class="relative z-10">
+                <h2 class="text-4xl md:text-6xl font-black text-white mb-8 tracking-tight">Ready to elevate <br> your experiences?</h2>
+                <p class="text-slate-400 text-lg mb-12 max-w-xl mx-auto font-medium">Join the next generation of event managers and attendees. Free forever for participants.</p>
+                
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'sign-up' %}" class="btn-primary py-4 px-12 text-lg !bg-white !text-slate-900 hover:!bg-slate-50">Create Free Account</a>
+                    {% endif %}
+                    <a href="{% url 'event_list' %}" class="text-white font-bold hover:text-primary-400 transition flex items-center">
+                        Explore all events 
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 {% endblock content %}
