@@ -41,8 +41,8 @@
                     <tr class="group hover:bg-slate-50/50 transition-colors">
                         <td class="px-8 py-6">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-300 font-black text-lg group-hover:bg-primary-50 group-hover:text-primary-600 group-hover:border-primary-100 transition-all uppercase">
-                                    {{ participant.name|slice:":1" }}
+                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100 border border-primary-200/50 flex items-center justify-center text-primary-600 font-black text-lg group-hover:scale-110 transition-all shadow-sm">
+                                    {{ participant.name|slice:":1"|upper }}
                                 </div>
                                 <div>
                                     <div class="font-bold text-slate-900 group-hover:text-primary-600 transition-colors">{{ participant.name }}</div>

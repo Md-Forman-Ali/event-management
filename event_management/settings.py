@@ -26,7 +26,8 @@ ALLOWED_HOSTS = [
 ALLOWED_HOSTS = [
     'event-management-e9ne.onrender.com',
     'event-management-2-5ldo.onrender.com',
-    'event-management-3-lfc6.onrender.com', 
+    'event-management-3-lfc6.onrender.com',
+    '.onrender.com',
     '127.0.0.1',
     'localhost',
     '.vercel.app'
@@ -35,6 +36,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://event-management-e9ne.onrender.com',
     'https://event-management-2-5ldo.onrender.com',
     'https://event-management-3-lfc6.onrender.com',
+    'https://*.onrender.com',
     'http://127.0.0.1:8000'
 ]
 
@@ -110,10 +112,10 @@ WSGI_APPLICATION = 'event_management.wsgi.application'
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3', 
-    }
+    'default': dj_database_url.config(
+        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
+        conn_max_age=600
+    )
 }
 
 # DATABASES = {

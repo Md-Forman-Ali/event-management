@@ -20,7 +20,7 @@
                     <span class="text-xs font-bold text-slate-600 uppercase tracking-widest">Join {{ total_participants_count }}+ Event Enthusiasts</span>
                 </div>
                 
-                <h1 class="text-6xl md:text-8xl font-black text-slate-900 tracking-tighter mb-8 leading-[0.9] animate-fade-in-up">
+                <h1 class="text-4xl sm:text-6xl md:text-8xl font-black text-slate-900 tracking-tighter mb-8 leading-[0.9] animate-fade-in-up">
                     Crafting <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-accent-600">Legendary</span> <br>
                     Moments Together.
                 </h1>
@@ -93,9 +93,13 @@
                 <div class="group bg-white rounded-[2.5rem] shadow-premium hover:shadow-premium-hover transition-all duration-700 overflow-hidden flex flex-col border border-gray-100 animate-fade-in-up" style="animation-delay: {{ forloop.counter0|multiply:0.1 }}s">
                     <div class="relative overflow-hidden aspect-[16/10]">
                         {% if event.image %}
-                        <img src="{{ event.image.url }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000" alt="{{ event.name }}">
+                        <img src="{{ event.image.url }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000" alt="{{ event.name }}"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=1470';">
                         {% else %}
-                        <div class="w-full h-full bg-slate-50 flex items-center justify-center text-slate-200"><svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
+                        <div class="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 flex flex-col items-center justify-center text-slate-400">
+                          <svg class="w-16 h-16 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                          <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">No Image Preview</span>
+                        </div>
                         {% endif %}
                         <div class="absolute top-4 left-4">
                             <span class="status-badge bg-white/90 backdrop-blur-md text-primary-600 !py-1 !px-3 shadow-sm">{{ event.category.name }}</span>

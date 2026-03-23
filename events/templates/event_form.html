@@ -5,13 +5,13 @@
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-3xl mx-auto">
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <div class="glass-card rounded-[3rem] overflow-hidden border border-white/40 shadow-2xl">
             <!-- Header -->
-            <div class="bg-primary-600 px-8 py-6">
-                <h2 class="text-2xl font-bold text-white">
-                    {% if form.instance.pk %}Update Event{% else %}Create New Event{% endif %}
+            <div class="bg-gradient-to-r from-primary-600 to-indigo-700 px-10 py-10">
+                <h2 class="text-4xl font-black text-white tracking-tight">
+                    {% if form.instance.pk %}Update <span class="text-primary-200">Event</span>{% else %}Create New <span class="text-primary-200">Event</span>{% endif %}
                 </h2>
-                <p class="text-primary-100 mt-1">Fill in the details below to manage your event.</p>
+                <p class="text-primary-100/80 mt-2 font-medium">Capture the essence of your next legendary moment.</p>
             </div>
 
             <!-- Form -->
@@ -83,15 +83,15 @@
     document.addEventListener('DOMContentLoaded', () => {
         const inputs = document.querySelectorAll('input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="hidden"]), select, textarea');
         inputs.forEach(input => {
-            if (!input.classList.contains('border-gray-300')) {
-                input.className += ' block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-150 ease-in-out';
+            if (!input.classList.contains('bg-slate-50')) {
+                input.className += ' block w-full px-5 py-4 bg-slate-50/50 border border-slate-200 rounded-2xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500/50 sm:text-sm transition-all duration-300';
             }
         });
 
-        // Handle file inputs specially if needed
+        // Handle file inputs specially
         const fileInputs = document.querySelectorAll('input[type="file"]');
         fileInputs.forEach(input => {
-            input.className = 'block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 transition';
+            input.className = 'block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-xs file:font-black file:uppercase file:tracking-widest file:bg-primary-600 file:text-white hover:file:bg-primary-700 transition-all cursor-pointer';
         });
     });
 </script>
