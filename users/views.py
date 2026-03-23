@@ -12,6 +12,8 @@ from django.contrib.auth.views import LoginView,PasswordChangeView,PasswordReset
 from django.contrib.auth.views import PasswordResetConfirmView
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
+from django.core.mail import send_mail
+from django.conf import settings
 
 User = get_user_model()
 # rolecheck
@@ -249,7 +251,22 @@ class EditProfileView(UpdateView):
         return self.request.user
     def form_valid(self, form):
          
-       form.save()
-       return redirect('profile')
+        form.save()
+        return redirect('profile')
+
+@user_passes_test(is_admin, login_url='no_permission')
+def test_email(request):
+    subject = "Test Email from EventMaster"
+    message = "This is a test email to verify SMTP settings on production."
+    from_email = settings.EMAIL_HOST_USER
+    recipient_list = [from_email]
     
+    try:
+        if not from_email:
+            return HttpResponse("CRITICAL: EMAIL_HOST_USER is NOT SET.")
+            
+        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+        return HttpResponse(f"SUCCESS: Test email sent to {from_email}. Check your inbox.")
+    except Exception as e:
+        return HttpResponse(f"FAILED: {str(e)}<br><br>Settings: HOST={settings.EMAIL_HOST}, PORT={settings.EMAIL_PORT}, TLS={settings.EMAIL_USE_TLS}")
 

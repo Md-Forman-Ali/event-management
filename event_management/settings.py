@@ -209,7 +209,11 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-FRONTEND_URL = config('FRONTEND_URL', default='http://127.0.0.1:8000/')
+EMAIL_TIMEOUT = 10  # Seconds to wait for SMTP response
+
+FRONTEND_URL = config('FRONTEND_URL', default='http://127.0.0.1:8000')
+if not FRONTEND_URL.endswith('/'):
+    FRONTEND_URL += '/'
 
 
 LOGIN_URL = '/users/sign-in/'

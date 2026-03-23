@@ -13,12 +13,24 @@ User = get_user_model()
 
 def email_sender(subject, plain_message, from_email, recipient_list, html_message):
     try:
-        print(f"Attempting to send email to {recipient_list} from {from_email}...")
-        send_mail(subject, plain_message, from_email, recipient_list, html_message=html_message, fail_silently=False)
-        print(f"Email sent successfully to {recipient_list}")
+        if not from_email:
+            print("CRITICAL: EMAIL_HOST_USER is NOT SET. Check environment variables.")
+            return
+            
+        print(f"DEBUG: Attempting to send email from {from_email} to {recipient_list}...")
+        send_mail(
+            subject, 
+            plain_message, 
+            from_email, 
+            recipient_list, 
+            html_message=html_message, 
+            fail_silently=False
+        )
+        print(f"SUCCESS: Email sent successfully to {recipient_list}")
     except Exception as e:
         import traceback
         print(f"CRITICAL: Failed to send mail: {str(e)}")
+        print(f"SMTP Settings: HOST={settings.EMAIL_HOST}, PORT={settings.EMAIL_PORT}, TLS={settings.EMAIL_USE_TLS}")
         traceback.print_exc()
 
 @receiver(post_save, sender=User)
