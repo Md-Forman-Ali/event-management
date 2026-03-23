@@ -73,7 +73,9 @@ class CustomLogin(LoginView):
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
-        return  next_url if next_url else super().get_success_url()
+        if next_url:
+            return next_url
+        return reverse_lazy(get_role(self.request.user))
 
 
 

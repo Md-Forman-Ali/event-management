@@ -13,16 +13,21 @@ User = get_user_model()
 
 def email_sender(subject, plain_message, from_email, recipient_list, html_message):
     try:
+        print(f"Attempting to send email to {recipient_list} from {from_email}...")
         send_mail(subject, plain_message, from_email, recipient_list, html_message=html_message, fail_silently=False)
+        print(f"Email sent successfully to {recipient_list}")
     except Exception as e:
-        print(f"Failed to send mail: {str(e)}")
+        import traceback
+        print(f"CRITICAL: Failed to send mail: {str(e)}")
+        traceback.print_exc()
 
 @receiver(post_save, sender=User)
 def send_activation_email(sender, instance, created, **kwargs):
     if created:
         token = default_token_generator.make_token(instance)
         # Use settings.FRONTEND_URL which is now dynamic
-        activation_url = f"{settings.FRONTEND_URL}users/activate/{instance.id}/{token}"
+        frontend_url = settings.FRONTEND_URL.rstrip('/')
+        activation_url = f"{frontend_url}/users/activate/{instance.id}/{token}"
         subject = "Activate Your Account - EventMaster"
         
         context = {
