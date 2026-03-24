@@ -137,8 +137,41 @@ def admin_dashboard(request):
 
 @user_passes_test(is_organizer, login_url='no_permission')
 def organizer_dashboard(request):
+    type = request.GET.get('type', 'all')
+    today = timezone.localdate()
+
+    from django.db.models import Count
+    # Aggregate query for total unique participants across all events
+    total_participants_agg = Rsvp.objects.aggregate(total=Count('user', distinct=True))
+    total_participants = total_participants_agg['total']
+
+    total_events = Event.objects.count()
+    upcoming_events = Event.objects.filter(date__gt=today).count()
+    past_events = Event.objects.filter(date__lt=today).count()
+    todays_events = Event.objects.filter(date=today).select_related('category')
+    
+    base_query = Event.objects.select_related('category').prefetch_related('participants')
+
+    if type == 'today':
+        show_event = base_query.filter(date=today)
+    elif type == 'upcoming_events':
+        show_event = base_query.filter(date__gt=today)
+    elif type == 'past_events':
+        show_event = base_query.filter(date__lt=today)
+    else:
+        show_event = base_query.all()
+
     role = user_role(request.user)
-    return render(request, 'dashboard/organizer_dashboard.html', {"user_role": role})
+    context = {
+        "user_role": role,
+        "total_participants": total_participants,
+        "total_events": total_events,
+        "upcoming_events": upcoming_events,
+        "past_events": past_events,
+        "todays_events": todays_events,
+        "show_event": show_event,
+    }
+    return render(request, 'dashboard/organizer_dashboard.html', context)
 
 @user_passes_test(is_participant, login_url='no_permission')
 def participant_dashboard(request):

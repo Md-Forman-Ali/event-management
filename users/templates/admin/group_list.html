@@ -1,36 +1,66 @@
-{% extends "admin/dashboard.html" %}
-{% block content %}
-      <div class='w-2/3 mx-auto my-8'>
-            <h2 class="text-2xl font-bold mb-4">Groups and Permissions</h2>
-        <div class="overflow-x-auto">
-            <table class="table-auto w-full border-collapse border border-gray-300">
-            <thead>
-                <tr class="bg-gray-100">
-                <th class="border border-gray-300 px-4 py-2">Group Name</th>
-                <th class="border border-gray-300 px-4 py-2">Permissions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for group in groups %}
-                    <tr class="odd:bg-white even:bg-gray-50">
-                    <td class="border border-gray-300 px-4 py-2 font-medium">
-                        {{group.name}}
-                    </td>
-                    <td class="border border-gray-300 px-4 py-2">
-                        <ul class="list-disc list-inside">
-                            {% for permission in group.permissions.all %}
-                                <li>{{permission.name}}</li>
-                            {% empty %}
-                                <span class="text-gray-500 italic">No permissions assigned</span>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    </tr>
-                {% endfor %}
-                
-            </tbody>
-            </table>
-        </div>
-      </div>
+{% extends "base.html" %}
+{% load static %}
 
+{% block title %}Groups & Permissions | EventPro{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900 mb-2">Access Control</h1>
+            <p class="text-slate-500 text-sm">Manage roles and their respective permissions.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="{% url 'admin-dashboard' %}" class="inline-flex items-center px-5 py-2.5 bg-white text-slate-700 text-sm font-bold rounded-xl border border-slate-200 hover:bg-slate-50 transition-all shadow-sm">
+                Dashboard
+            </a>
+            <a href="{% url 'create-group' %}" class="inline-flex items-center px-5 py-2.5 bg-primary-600 text-white text-sm font-bold rounded-xl hover:bg-primary-700 transition-all shadow-lg shadow-primary-100">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                New Group
+            </a>
+        </div>
+    </div>
+
+    <!-- Groups Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for group in groups %}
+        <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden flex flex-col h-full">
+            <div class="p-8 border-b border-slate-50">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-3 py-1 bg-primary-50 text-primary-600 text-[10px] font-bold rounded-full uppercase tracking-widest leading-none">
+                        Role
+                    </span>
+                    <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900">{{ group.name }}</h3>
+            </div>
+            
+            <div class="p-8 flex-grow">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Permissions</p>
+                <div class="space-y-3">
+                    {% for permission in group.permissions.all %}
+                    <div class="flex items-start gap-3">
+                        <svg class="w-4 h-4 text-green-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span class="text-xs text-slate-600 font-medium leading-tight">{{ permission.name }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="py-4 text-center">
+                        <p class="text-[10px] text-slate-300 italic">No permissions assigned</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="px-8 py-6 bg-slate-50/50 border-t border-slate-50">
+                <button class="w-full py-2.5 bg-white text-slate-500 text-xs font-bold rounded-xl border border-slate-200 hover:bg-slate-100 transition-all shadow-sm">
+                    Manage Permissions
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock content %}

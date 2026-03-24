@@ -32,13 +32,23 @@ class EventList(ListView):
     def get_queryset(self):
         user = self.request.user
         search = self.request.GET.get('search', '')
+        category_id = self.request.GET.get('category', '')
+        start_date = self.request.GET.get('start_date', '')
+        end_date = self.request.GET.get('end_date', '')
         
+        events = Event.objects.select_related('category').prefetch_related('rsvp').all()
+
         if search:
-            events = Event.objects.filter(
-            Q(name__icontains=search) | Q(location__icontains=search)
-            ).select_related('category').prefetch_related('rsvp')
-        else:
-            events = Event.objects.select_related('category').prefetch_related('rsvp').all()
+            events = events.filter(Q(name__icontains=search) | Q(location__icontains=search))
+        
+        if category_id:
+            events = events.filter(category_id=category_id)
+        
+        if start_date:
+            events = events.filter(date__gte=start_date)
+        
+        if end_date:
+            events = events.filter(date__lte=end_date)
 
         if user.is_authenticated:
             for event in events:
@@ -48,10 +58,13 @@ class EventList(ListView):
                 event.user_has_rsvped = False
         return events
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['search'] = self.request.GET.get('search', '')
+        context['categories'] = Category.objects.all()
+        context['selected_category'] = self.request.GET.get('category', '')
+        context['start_date'] = self.request.GET.get('start_date', '')
+        context['end_date'] = self.request.GET.get('end_date', '')
         return context
     
 
@@ -106,8 +119,12 @@ def dashboard(request):
     type = request.GET.get('type', 'all')
     today = date.today()
 
+    from django.db.models import Count
+    # Aggregate query to calculate total unique participants across all events
+    total_participants_agg = Rsvp.objects.aggregate(total=Count('user', distinct=True))
+    total_participants = total_participants_agg['total']
+
     total_events = Event.objects.count()
-    total_participants = User.objects.count()
     todays_events = Event.objects.filter(date=today).select_related('category')
     upcoming_events_count = Event.objects.filter(date__gt=today).count()
     past_events_count = Event.objects.filter(date__lt=today).count()
@@ -193,7 +210,7 @@ class DeleteEvent(LoginRequiredMixin,UserPassesTestMixin,DeleteView):
 
 
 @login_required
-@user_passes_test(is_organizer, login_url='no_permission')
+@user_passes_test(lambda u: is_admin(u) or is_organizer(u), login_url='no_permission')
 def create_category(request):
     category_form = CategoryModelForm()
     if request.method == 'POST':
@@ -208,14 +225,14 @@ def create_category(request):
 
 
 @login_required
-@user_passes_test(is_organizer, login_url='no_permission')
+@user_passes_test(lambda u: is_admin(u) or is_organizer(u), login_url='no_permission')
 def category_list(request):
     categories = Category.objects.all()
     return render(request, 'category_list.html', {'categories': categories})
 
 
 @login_required
-@user_passes_test(is_organizer, login_url='no_permission')
+@user_passes_test(lambda u: is_admin(u) or is_organizer(u), login_url='no_permission')
 def update_category(request, id):
     try:
         category = Category.objects.get(id=id)
@@ -237,7 +254,7 @@ def update_category(request, id):
 
 
 @login_required
-@user_passes_test(is_admin, login_url='no_permission')
+@user_passes_test(lambda u: is_admin(u) or is_organizer(u), login_url='no_permission')
 def delete_category(request, id):
     if request.method == "POST":
         try:

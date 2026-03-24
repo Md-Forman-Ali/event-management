@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Reset - EventPro</title>
+    <title>Welcome to EventPro</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
         .wrapper { background-color: #f8fafc; padding: 40px 20px; }
@@ -24,21 +24,22 @@
         <div class="container">
             <div class="header">
                 <div class="logo">E</div>
-                <h1 style="margin:0; font-size: 32px; font-weight: 800; letter-spacing: -0.025em;">Password Reset</h1>
+                <h1 style="margin:0; font-size: 32px; font-weight: 800; letter-spacing: -0.025em;">Welcome to EventPro</h1>
             </div>
             <div class="content">
-                <p class="greeting">Hi {{ user.get_full_name|default:user.username }},</p>
-                <p class="text">We received a request to reset your password. No worries, it happens! Click the button below to set a new one and get back to managing your events.</p>
+                <p class="greeting">Hi {{ username }},</p>
+                <p class="text">We're thrilled to have you join our community! To get started and unlock all features, please verify your email address by clicking the button below.</p>
                 
                 <div class="button-wrapper">
-                    <a href="{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}" class="button">Reset My Password</a>
+                    <a href="{{ activation_url }}" class="button">Activate My Account</a>
                 </div>
                 
-                <p class="text">If you didn't request this, you can safely ignore this email. This link will expire in 24 hours.</p>
+                <p class="text" style="font-size: 14px; margin-top: 40px;">If the button doesn't work, you can also copy and paste this link into your browser:<br>
+                <span style="color: #7c3aed; word-break: break-all;">{{ activation_url }}</span></p>
             </div>
             <div class="footer">
-                &copy; 2025 EventPro Platform.<br>
-                Experience events like never before.
+                <p style="margin-bottom: 8px;">&copy; 2025 EventPro. All rights reserved.</p>
+                <p>Experience events like never before.</p>
             </div>
         </div>
     </div>

@@ -2,7 +2,7 @@ from django import forms
 from events.models import Event, Category
 
 class StyledFormMixin:
-    default_classes = "border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+    default_classes = "w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all outline-none text-slate-700 placeholder:text-slate-400"
 
     def apply_styled_widgets(self):
         for field_name, field in self.fields.items():

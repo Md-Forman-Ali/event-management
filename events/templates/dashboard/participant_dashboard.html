@@ -1,33 +1,77 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}My RSVPs | EventPro{% endblock %}
+
 {% block content %}
-<div class="max-w-3xl mx-auto p-6">
-
-  <div class="flex justify-end">
-  <a href="{% url 'event_list' %}" class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">
-    View All Events</a></div>
-
-
-  <h2 class="text-3xl font-bold text-center text-gray-800 my-6">Your RSVP Events Here </h2>
-
-  {% if rsvp_events %}
-    <ul class="space-y-4">
-      {% for event in rsvp_events %}
-        <li class="bg-white shadow rounded-lg p-4 flex justify-between items-center">
-          <div>
-            <h3 class="text-lg font-semibold text-gray-900">{{ event.name }}</h3>
-            <p class="text-sm text-gray-500">{{ event.location }} • {{ event.time }}</p>
-          </div>
-          <span class="inline-block bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full">
-            {{ event.date }}
-          </span>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <div class="bg-yellow-100 text-yellow-800 px-4 py-3 rounded mt-6 text-center">
-        No Event RSVP Found 
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 animate-slide-up">
+        <div>
+            <span class="text-[10px] font-black text-primary-600 uppercase tracking-[0.3em] mb-4 block">Personal Journey</span>
+            <h1 class="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">My Events</h1>
+            <p class="text-slate-500 text-lg font-medium">Your curated experiences. Track your journey and discover more.</p>
+        </div>
+        <a href="{% url 'event_list' %}" class="inline-flex items-center px-10 py-4 bg-primary-600 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-primary-700 transition-all shadow-2xl shadow-primary-200 transform active:scale-95 group">
+            Discover More
+            <svg class="w-5 h-5 ml-3 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+        </a>
     </div>
-  {% endif %}
 
+    <!-- RSVP List -->
+    {% if rsvp_events %}
+    <div class="space-y-8">
+        {% for event in rsvp_events %}
+        <div class="group bg-white rounded-[2.5rem] p-8 sm:p-10 border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-primary-100/50 transition-all duration-500 flex flex-col sm:flex-row sm:items-center gap-8 animate-fade-in" style="animation-delay: {{ forloop.counter0|add:1 }}00ms">
+            <!-- Icon/Visual -->
+            <div class="w-24 h-24 bg-primary-50 rounded-[2rem] flex items-center justify-center shrink-0 group-hover:bg-primary-600 group-hover:text-white transition-all duration-500 transform group-hover:rotate-12">
+                <svg class="w-12 h-12 text-primary-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </div>
+
+            <!-- Details -->
+            <div class="flex-grow">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="px-4 py-1.5 bg-green-50 text-green-700 text-[10px] font-black rounded-full uppercase tracking-widest border border-green-100 flex items-center gap-2">
+                        <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                        Confirmed
+                    </span>
+                    <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest">{{ event.category.name }}</span>
+                </div>
+                <h3 class="text-2xl font-black text-slate-900 group-hover:text-primary-600 transition-colors mb-3 tracking-tight">{{ event.name }}</h3>
+                <div class="flex flex-wrap items-center gap-x-8 gap-y-3 text-slate-500 font-medium">
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                        {{ event.location }}
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        {{ event.date|date:"F d, Y" }} <span class="text-slate-200">|</span> <span class="text-primary-600">{{ event.time|time:"H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="shrink-0 flex items-center gap-4 mt-6 sm:mt-0">
+                <a href="{% url 'event_detail' event.id %}" class="w-14 h-14 bg-slate-50 text-slate-400 hover:text-primary-600 hover:bg-white rounded-2xl flex items-center justify-center transition-all shadow-sm hover:shadow-xl border border-transparent hover:border-slate-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="py-32 bg-white rounded-[4rem] border border-slate-100 shadow-2xl shadow-slate-100 overflow-hidden text-center px-12 animate-fade-in">
+        <div class="relative w-32 h-32 mx-auto mb-10">
+            <div class="absolute inset-0 bg-primary-50 rounded-full animate-pulse"></div>
+            <div class="absolute inset-4 bg-primary-100/50 rounded-full animate-pulse" style="animation-delay: 150ms"></div>
+            <svg class="w-16 h-16 text-primary-200 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </div>
+        <h3 class="text-3xl font-black text-slate-900 mb-4 tracking-tight">Your Journey Awaits</h3>
+        <p class="text-slate-500 mb-12 max-w-sm mx-auto text-lg font-medium leading-relaxed">You haven't joined any events yet. The next big experience is just a click away.</p>
+        <a href="{% url 'event_list' %}" class="inline-flex items-center justify-center px-12 py-5 bg-primary-600 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-primary-700 transition-all shadow-2xl shadow-primary-200 transform hover:scale-105 active:scale-100">
+            Start Exploring
+        </a>
+    </div>
+    {% endif %}
 </div>
 {% endblock content %}

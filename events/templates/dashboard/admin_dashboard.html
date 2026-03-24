@@ -1,88 +1,143 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}Admin Dashboard | EventPro{% endblock %}
+
 {% block content %}
-<div class="max-w-[1400px] mx-auto p-6">
-
-  <!-- Navbar -->
-  <nav class="bg-white border-b border-gray-200 mb-6">
-    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-      <div class="hidden w-full md:block md:w-auto" id="navbar-default">
-        <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white">
-          <li>
-            <a href="{% url 'event_list' %}" class="block py-2 px-3 text-blue-500 hover:text-blue-600">Event</a>
-          </li>
-          <li>
-            <a href="{% url 'category_list' %}" class="block py-2 px-3 text-blue-500 hover:text-blue-600">Category</a>
-          </li>
-          
-        </ul>
-      </div>
-
-      <div class="flex space-x-4">
-       
-        <a href="{% url 'create_event' %}" class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">Create Event</a>
-        <a href="{% url 'create_category' %}" class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">Create Category</a>
-        <a href="{% url 'home' %}" class="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700">Home</a>
-      </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Dashboard Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 animate-slide-up">
+        <div>
+            <span class="text-[10px] font-black text-primary-600 uppercase tracking-[0.3em] mb-4 block">Command Center</span>
+            <h1 class="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">System Overview</h1>
+            <p class="text-slate-500 text-lg font-medium">Welcome back, Administrator. Monitoring platform health and activity.</p>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="{% url 'create_event' %}" class="inline-flex items-center px-10 py-4 bg-primary-600 text-white text-[10px] font-black uppercase tracking-widest rounded-[2rem] hover:bg-primary-700 transition-all shadow-2xl shadow-primary-200 transform active:scale-95 group">
+                <svg class="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                New Event
+            </a>
+            <a href="{% url 'create_category' %}" class="hidden sm:inline-flex items-center px-8 py-4 bg-white text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-[2rem] border border-slate-200 hover:bg-slate-50 transition-all shadow-sm">
+                Add Category
+            </a>
+        </div>
     </div>
-  </nav>
 
-  <h1 class="text-3xl font-bold text-center mb-8">Admin Dashboard</h1>
-
-  <!-- Stats Cards -->
-  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white rounded-xl shadow p-6 text-center">
-      <h2 class="text-lg font-semibold">Total Participants</h2>
-      <p class="text-2xl font-bold text-blue-600">{{ total_participants }}</p>
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+        <!-- Users Stat -->
+        <div class="group bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-primary-100/50 transition-all duration-500 transform hover:-translate-y-2 animate-fade-in">
+            <div class="w-14 h-14 bg-primary-50 text-primary-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary-600 group-hover:text-white transition-all transform group-hover:rotate-12">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            </div>
+            <p class="text-4xl font-black text-slate-900 tracking-tight mb-1">{{ total_participants }}</p>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Total Users</p>
+        </div>
+        <!-- Events Stat -->
+        <div class="group bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-indigo-100/50 transition-all duration-500 transform hover:-translate-y-2 animate-fade-in" style="animation-delay: 100ms">
+            <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-all transform group-hover:rotate-12">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </div>
+            <p class="text-4xl font-black text-slate-900 tracking-tight mb-1">{{ total_events }}</p>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Total Events</p>
+        </div>
+        <!-- Upcoming Stat -->
+        <div class="group bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-green-100/50 transition-all duration-500 transform hover:-translate-y-2 animate-fade-in" style="animation-delay: 200ms">
+            <div class="w-14 h-14 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 group-hover:text-white transition-all transform group-hover:rotate-12">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+            </div>
+            <p class="text-4xl font-black text-slate-900 tracking-tight mb-1">{{ upcoming_events }}</p>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Upcoming</p>
+        </div>
+        <!-- Past Stat -->
+        <div class="group bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-amber-100/50 transition-all duration-500 transform hover:-translate-y-2 animate-fade-in" style="animation-delay: 300ms">
+            <div class="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-amber-600 group-hover:text-white transition-all transform group-hover:rotate-12">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <p class="text-4xl font-black text-slate-900 tracking-tight mb-1">{{ past_events }}</p>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Total Past</p>
+        </div>
     </div>
-    <div class="bg-white rounded-xl shadow p-6 text-center">
-      <h2 class="text-lg font-semibold">Total Events</h2>
-      <p class="text-2xl font-bold text-blue-600">{{ total_events }}</p>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- Today's Events -->
+        <div class="bg-white rounded-[3rem] border border-slate-100 shadow-2xl shadow-slate-200/50 overflow-hidden animate-fade-in" style="animation-delay: 400ms">
+            <div class="p-10 border-b border-slate-50 flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-900 tracking-tight mb-1">Today's Schedule</h2>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Live Operations</p>
+                </div>
+                <span class="px-5 py-2 bg-primary-50 text-primary-600 text-[10px] font-black rounded-full uppercase tracking-widest">
+                    {{ todays_events.count }} Active
+                </span>
+            </div>
+            <div class="p-10">
+                {% if todays_events %}
+                <div class="space-y-6">
+                    {% for event in todays_events %}
+                    <div class="group flex items-center gap-6 p-6 rounded-[2rem] hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100">
+                        <div class="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary-600 group-hover:text-white transition-all transform group-hover:rotate-6">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-lg font-black text-slate-900 group-hover:text-primary-600 transition-colors tracking-tight mb-1">{{ event.name }}</h3>
+                            <div class="flex items-center gap-3">
+                                <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest">{{ event.category.name }}</span>
+                                <span class="w-1 h-1 bg-slate-200 rounded-full"></span>
+                                <span class="text-[10px] font-black text-primary-500 uppercase tracking-widest">{{ event.time|time:"H:i" }}</span>
+                            </div>
+                        </div>
+                        <a href="{% url 'event_detail' event.id %}" class="w-12 h-12 rounded-2xl flex items-center justify-center text-slate-300 hover:text-primary-600 hover:bg-white shadow-sm hover:shadow-xl transition-all border border-transparent hover:border-slate-100">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="py-20 text-center">
+                    <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-200">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <p class="text-slate-400 font-bold uppercase tracking-widest text-[10px]">No operations scheduled</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- System Activity / Recent Users -->
+        <div class="bg-white rounded-[3rem] border border-slate-100 shadow-2xl shadow-slate-200/50 overflow-hidden animate-fade-in" style="animation-delay: 500ms">
+            <div class="p-10 border-b border-slate-50 flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-900 tracking-tight mb-1">New Arrivals</h2>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Recent Onboarding</p>
+                </div>
+                <a href="{% url 'user-list' %}" class="text-[10px] font-black text-primary-600 hover:text-primary-700 uppercase tracking-widest group flex items-center gap-2">
+                    Directory
+                    <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                </a>
+            </div>
+            <div class="p-10">
+                <div class="space-y-6">
+                    {% for user in users|slice:":5" %}
+                    <div class="flex items-center gap-6 p-6 group">
+                        <div class="w-14 h-14 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 font-black text-sm group-hover:bg-primary-50 group-hover:text-primary-600 transition-all border-4 border-white shadow-sm">
+                            {{ user.username|first|upper }}
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="text-lg font-black text-slate-900 tracking-tight group-hover:text-primary-600 transition-colors">{{ user.username }}</h3>
+                            <p class="text-xs text-slate-400 font-medium">{{ user.email }}</p>
+                        </div>
+                        <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest 
+                            {% if user.group_name == 'Admin' %} bg-red-50 text-red-600 
+                            {% elif user.group_name == 'Organizer' %} bg-primary-50 text-primary-600 
+                            {% else %} bg-slate-50 text-slate-400 {% endif %}">
+                            {{ user.group_name }}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="bg-white rounded-xl shadow p-6 text-center">
-      <h2 class="text-lg font-semibold">Upcoming Events</h2>
-      <p class="text-2xl font-bold text-blue-600">{{ upcoming_events }}</p>
-    </div>
-    <div class="bg-white rounded-xl shadow p-6 text-center">
-      <h2 class="text-lg font-semibold">Past Events</h2>
-      <p class="text-2xl font-bold text-blue-600">{{ past_events }}</p>
-    </div>
-  </section>
-
-  <!-- Today's Events -->
-  <section class="bg-white rounded-xl shadow p-6 mb-8">
-    <h2 class="text-2xl font-semibold mb-4">Today's Events</h2>
-    {% if todays_events %}
-      <ul class="space-y-3">
-        {% for event in todays_events %}
-          <li class="bg-gray-100 p-4 rounded-lg">
-            <h3 class="text-lg font-semibold">Event: {{ event.name }}</h3>
-            <p>Category: {{ event.category.name }}</p>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p class="text-gray-500">No events today.</p>
-    {% endif %}
-  </section>
-
-
-  <section class="bg-white rounded-xl shadow p-6">
-    <h2 class="text-2xl font-semibold mb-4">All Events</h2>
-    {% if show_event %}
-      <ul class="space-y-3">
-        {% for event in show_event %}
-          <li class="bg-gray-100 p-4 rounded-lg">
-            <h3 class="text-lg font-semibold">{{ event.name }}</h3>
-            <p>Category: {{ event.category.name }}</p>
-            <p>Date: {{ event.date }}</p>
-            <p>Location: {{ event.location }}</p>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p class="text-gray-500">No events found.</p>
-    {% endif %}
-  </section>
-
 </div>
 {% endblock content %}

@@ -1,41 +1,124 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}User Management | EventPro{% endblock %}
+
 {% block content %}
-<div class="container mx-auto p-6">
-  <div class="overflow-x-auto">
-    <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-      <thead class="bg-gray-100">
-        <tr>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Number</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Role</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-200">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 animate-slide-up">
+        <div>
+            <span class="text-[10px] font-black text-primary-600 uppercase tracking-[0.3em] mb-4 block">Platform Control</span>
+            <h1 class="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">User Management</h1>
+            <p class="text-slate-500 text-lg font-medium max-w-md">Oversee platform members, assign roles, and manage permissions.</p>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="{% url 'admin-dashboard' %}" class="inline-flex items-center px-8 py-4 bg-white text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all shadow-sm transform active:scale-95">
+                Dashboard
+            </a>
+            <a href="{% url 'create-group' %}" class="inline-flex items-center px-10 py-4 bg-primary-600 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-primary-700 transition-all shadow-2xl shadow-primary-200 transform active:scale-95">
+                New Group
+            </a>
+        </div>
+    </div>
+
+    <!-- Mobile View: User Cards -->
+    <div class="grid grid-cols-1 gap-6 md:hidden">
         {% for user in users %}
-          <tr class="hover:bg-gray-50">
-            <td class="px-4 py-4 whitespace-nowrap">{{ forloop.counter }}</td>
-            <td class="px-4 py-4 whitespace-nowrap">{{ user.username }}</td>
-            <td class="px-4 py-4 whitespace-nowrap">{{ user.email }}</td>
-            <td class="px-4 py-4 whitespace-nowrap">{{ user.id }}</td>
-            <td class="px-4 py-4 whitespace-nowrap">
-              {% if user.groups.first %}
-                {{ user.groups.first.name }}
-              {% else %}
-                No Role
-              {% endif %}
-            </td>
-            <td class="px-4 py-4 whitespace-nowrap">
-              <a href="{% url 'assign-role' user.id %}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                Change Role
-              </a>
-            </td>
-          </tr>
+        <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm animate-fade-in" style="animation-delay: {{ forloop.counter0|add:1 }}00ms">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-14 h-14 bg-primary-50 rounded-2xl flex items-center justify-center text-primary-600 font-black text-lg ring-4 ring-primary-50/50">
+                    {{ user.username|first|upper }}
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 tracking-tight">{{ user.username }}</h3>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ user.email }}</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between pt-6 border-t border-slate-50">
+                <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest 
+                    {% if user.groups.first.name == 'Admin' %} bg-red-50 text-red-600 
+                    {% elif user.groups.first.name == 'Organizer' %} bg-primary-50 text-primary-600 
+                    {% else %} bg-slate-50 text-slate-400 {% endif %}">
+                    {{ user.groups.first.name|default:"No Role" }}
+                </span>
+                
+                <a href="{% url 'assign-role' user.id %}" class="inline-flex items-center px-6 py-3 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-black/10">
+                    Edit Role
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="bg-slate-50 p-12 rounded-[2.5rem] text-center border-2 border-dashed border-slate-200">
+             <p class="text-slate-400 font-bold uppercase tracking-widest text-[10px]">No Users Found</p>
+        </div>
         {% endfor %}
-      </tbody>
-    </table>
-  </div>
+    </div>
+
+    <!-- Desktop View: User Table -->
+    <div class="hidden md:block bg-white rounded-[3rem] shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden animate-fade-in">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/50 border-b border-slate-100">
+                        <th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">#</th>
+                        <th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Identity</th>
+                        <th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Email Affinity</th>
+                        <th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Access Role</th>
+                        <th class="px-10 py-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] text-right">Command</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% for user in users %}
+                    <tr class="group hover:bg-slate-50/50 transition-all duration-300">
+                        <td class="px-10 py-10">
+                            <span class="text-sm font-black text-slate-300">{{ forloop.counter }}</span>
+                        </td>
+                        <td class="px-10 py-10">
+                            <div class="flex items-center gap-5">
+                                <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-primary-50 group-hover:text-primary-600 transition-all group-hover:scale-110 font-black">
+                                    {{ user.username|first|upper }}
+                                </div>
+                                <div>
+                                    <span class="text-lg font-black text-slate-900 group-hover:text-primary-600 transition-colors tracking-tight block">{{ user.username }}</span>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Platform Member</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-10 py-10">
+                            <span class="text-slate-500 font-medium">{{ user.email }}</span>
+                        </td>
+                        <td class="px-10 py-10">
+                            <span class="px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest 
+                                {% if user.groups.first.name == 'Admin' %} bg-red-50 text-red-600 
+                                {% elif user.groups.first.name == 'Organizer' %} bg-primary-50 text-primary-600 
+                                {% else %} bg-slate-100 text-slate-400 {% endif %}">
+                                {{ user.groups.first.name|default:"Unassigned" }}
+                            </span>
+                        </td>
+                        <td class="px-10 py-10 text-right">
+                            <div class="flex justify-end opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
+                                <a href="{% url 'assign-role' user.id %}" class="inline-flex items-center px-8 py-3 bg-white text-primary-600 text-[10px] font-black uppercase tracking-widest rounded-2xl border border-primary-100 hover:bg-primary-600 hover:text-white transition-all shadow-xl shadow-primary-50">
+                                    Change Access
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-10 py-32 text-center">
+                            <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-8 animate-pulse text-slate-200">
+                                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            </div>
+                            <h3 class="text-2xl font-black text-slate-900 mb-2">No Platform Users</h3>
+                            <p class="text-slate-500 font-medium">Your platform is currently an island.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock content %}
