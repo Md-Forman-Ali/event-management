@@ -1,3 +1,4 @@
+import threading
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -11,30 +12,14 @@ from django.views.generic import TemplateView,UpdateView
 from django.contrib.auth.views import LoginView,PasswordChangeView,PasswordResetView
 from django.contrib.auth.views import PasswordResetConfirmView
 from django.contrib.auth import get_user_model
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.core.mail import send_mail
 from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from core.utils import is_admin, is_organizer, is_participant, get_user_role, email_sender
 
 User = get_user_model()
-# rolecheck
-def is_admin(user):
-    return user.groups.filter(name="Admin").exists()
-
-def is_participant(user):
-    return user.groups.filter(name='Participant').exists()
-
-def is_organizer(user):
-    return user.groups.filter(name='Organizer').exists()
-
-def user_role(user):
-    if user.is_authenticated:
-        if user.groups.filter(name='Admin').exists():
-            return 'Admin'
-        elif user.groups.filter(name='Organizer').exists():
-            return 'Organizer'
-        elif user.groups.filter(name='Participant').exists():
-            return 'Participant'
-    return None
 
 def sign_up(request):
     form = CustomRegistrationForm()
@@ -45,6 +30,27 @@ def sign_up(request):
             user.set_password(form.cleaned_data.get('password'))
             user.is_active = False 
             user.save()  
+
+            # Send activation email
+            token = default_token_generator.make_token(user)
+            activation_link = request.build_absolute_uri(
+                reverse('activate_user', kwargs={'user_id': user.id, 'token': token})
+            )
+            
+            subject = "Activate your EventMaster account"
+            context = {
+                'user': user,
+                'activation_url': activation_link,
+            }
+            html_message = render_to_string('registration/activation_email.html', context)
+            plain_message = strip_tags(html_message)
+            
+            thread = threading.Thread(
+                target=email_sender,
+                args=(subject, plain_message, settings.EMAIL_HOST_USER, [user.email], html_message)
+            )
+            thread.start()
+
             messages.success(request, 'A Confirmation mail sent. Please check your inbox')
             return redirect('sign-in')
         else:
@@ -123,7 +129,7 @@ def admin_dashboard(request):
     todays_events = Event.objects.filter(date=today)
     show_event = Event.objects.all()
 
-    role = user_role(request.user)
+    role = get_user_role(request.user)
 
     context = {
         "users": users,
@@ -141,7 +147,7 @@ def admin_dashboard(request):
 
 @user_passes_test(is_organizer, login_url='no_permission')
 def organizer_dashboard(request):
-    role = user_role(request.user)
+    role = get_user_role(request.user)
     return render(request, 'dashboard/organizer_dashboard.html', {"user_role": role})
 
 @user_passes_test(is_participant, login_url='no_permission')

@@ -11,17 +11,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.contrib.auth import get_user_model
+from core.utils import is_participant, is_organizer, is_admin
 
 User = get_user_model()
-
-def is_participant(user):
-    return user.groups.filter(name='Participant').exists()
-
-def is_organizer(user):
-    return user.groups.filter(name='Organizer').exists()
-
-def is_admin(user):
-    return user.is_superuser or user.groups.filter(name='Admin').exists()
 
 class EventList(ListView):
     model = Event

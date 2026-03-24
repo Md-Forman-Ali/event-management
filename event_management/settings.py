@@ -19,18 +19,10 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'event-management-e9ne.onrender.com',
     'event-management-2-5ldo.onrender.com',
-    '127.0.0.1',
-    'localhost'
-]
-
-ALLOWED_HOSTS = [
-    'event-management-e9ne.onrender.com',
-    'event-management-2-5ldo.onrender.com',
     'event-management-3-lfc6.onrender.com',
     '.onrender.com',
     '127.0.0.1',
     'localhost',
-    '.vercel.app'
 ]
 CSRF_TRUSTED_ORIGINS = [
     'https://event-management-e9ne.onrender.com',
@@ -202,15 +194,12 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = config('EMAIL_HOST')
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, cast=bool)
-EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)
-EMAIL_PORT = config('EMAIL_PORT', cast=int)
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 
-EMAIL_TIMEOUT = 10  # Seconds to wait for SMTP response
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://127.0.0.1:8000')
 if not FRONTEND_URL.endswith('/'):

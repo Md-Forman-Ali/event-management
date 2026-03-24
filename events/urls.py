@@ -20,8 +20,4 @@ urlpatterns = [
     path('category/<int:id>/update/', views.CategoryUpdateView.as_view(), name='update_category'),
     path('category/<int:id>/delete/', views.CategoryDeleteView.as_view(), name='delete_category'),
     path('first-home/', views.first_home, name='first_home'),
-
-    path('admin/dashboard/', user_view.admin_dashboard, name='admin_dashboard'),
-    path('organizer/dashboard/', user_view.organizer_dashboard, name='organizer_dashboard'),
-    path('participant/dashboard/', user_view.participant_dashboard, name='participant_dashboard'),
 ]
