@@ -2,6 +2,7 @@ from decouple import config
 from pathlib import Path
 import dj_database_url
 import os
+import cloudinary
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -123,6 +124,15 @@ CLOUDINARY_STORAGE = {
     'API_KEY': config('CLOUDINARY_API_KEY', default=''),
     'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
 }
+
+# Explicitly configure cloudinary library
+if CLOUDINARY_STORAGE['CLOUD_NAME']:
+    cloudinary.config(
+        cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
+        api_key=CLOUDINARY_STORAGE['API_KEY'],
+        api_secret=CLOUDINARY_STORAGE['API_SECRET'],
+        secure=True
+    )
 
 # STORAGES (Modern Way for Django 5.x)
 STORAGES = {
