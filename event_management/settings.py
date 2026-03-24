@@ -3,17 +3,10 @@ from pathlib import Path
 import dj_database_url
 import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-=5ghst_hzailb@&o85#r0*@)vx2yn44w(faw0@pa5^-hrm%6a5')
-
-# SECURITY WARNING: don't run with debug turned on in production!
+# SECURITY
+SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
@@ -26,36 +19,32 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000'
 ]
 
-
-
 CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
 
-
-
-
-
-# Application definition
-
+# APPS
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',
     'django.contrib.staticfiles',
+
     'cloudinary',
+    'cloudinary_storage',
+
     'events',
     'users',
-    'core'
+    'core',
 ]
 
 if DEBUG:
     INSTALLED_APPS += ['debug_toolbar']
 
+# MIDDLEWARE
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -69,13 +58,12 @@ MIDDLEWARE = [
 
 if DEBUG:
     MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
-INTERNAL_IPS = [
-    # ...
-    "127.0.0.1",
-    # ...
-]
+
+INTERNAL_IPS = ["127.0.0.1"]
+
 ROOT_URLCONF = 'event_management.urls'
 
+# TEMPLATES
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -93,103 +81,64 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'event_management.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
+# DATABASE
 DATABASES = {
     'default': dj_database_url.config(
-        default=config('DATABASE_URL', 
-            default=f"postgresql://{config('DB_USER', default='postgres')}:{config('DB_PASSWORD', default='')}@{config('DB_HOST', default='localhost')}:{config('DB_PORT', default='5432')}/{config('DB_NAME', default='postgres')}?sslmode=require"),
-        conn_max_age=0
+        default=config('DATABASE_URL'),
+        conn_max_age=600
     )
 }
 
-if not config('DATABASE_URL', default=None) and not config('DB_HOST', default=None):
-    # Fallback to sqlite if NO database config is found (prevents crash on Vercel startup if vars are missing)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
+# PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
+# INTERNATIONALIZATION
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
+# STATIC FILES
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static'
-]
+STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
 
-# Cloudinary Storage Configuration
+# ❌ REMOVE LOCAL MEDIA STORAGE
+# MEDIA_ROOT removed
+
+# CLOUDINARY (MAIN PART 🔥)
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default=''),
-    'API_KEY': config('CLOUDINARY_API_KEY', default=''),
-    'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET'),
 }
 
-if not DEBUG:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
+# DEFAULT PK
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# EMAIL
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
-EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
-
+# FRONTEND
 FRONTEND_URL = config('FRONTEND_URL', default='http://127.0.0.1:8000')
 if not FRONTEND_URL.endswith('/'):
     FRONTEND_URL += '/'
 
-
+# AUTH
 LOGIN_URL = '/users/sign-in/'
 LOGOUT_REDIRECT_URL = '/'
-LOGIN_REDIRECT_URL = '/'  
-
+LOGIN_REDIRECT_URL = '/'
 AUTH_USER_MODEL = 'users.CustomUser'
