@@ -4,6 +4,8 @@ Django==5.2.3
 django-debug-toolbar==5.2.0
 gunicorn==23.0.0
 packaging==26.0
+cloudinary==1.42.0
+django-cloudinary-storage==0.3.0
 pillow==11.3.0
 psycopg-binary==3.3.3
 psycopg2-binary==2.9.11
