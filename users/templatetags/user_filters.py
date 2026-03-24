@@ -28,7 +28,9 @@ def humanized_date(value):
 
 @register.filter(name='has_group')
 def has_group(user, group_name):
-    return user.groups.filter(name=group_name).exists()
+    if user.is_authenticated:
+        return user.groups.filter(name=group_name).exists()
+    return False
 
 @register.filter
 def multiply(value, arg):

@@ -58,7 +58,7 @@ def send_activation_email(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def assign_role(sender, instance, created, **kwargs):
-    if created:
+    if created and not instance.is_superuser:
         participant_group, _ = Group.objects.get_or_create(name='Participant')
         instance.groups.add(participant_group)
         # Note: instance.save() is not needed here as groups.add() persists the relationship

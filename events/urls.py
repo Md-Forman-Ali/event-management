@@ -3,7 +3,6 @@ from events import views
 from users import views as user_view
 
 urlpatterns = [
-    path('users/', include('users.urls')),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     
     path('event_list/', views.EventList.as_view(), name='event_list'),

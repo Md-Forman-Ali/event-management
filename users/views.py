@@ -2,7 +2,7 @@ import threading
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Count
 from django.contrib import messages
 from users.forms import CustomRegistrationForm, CreateGroup,EditProfileForm, LoginForm, AssignRoleForm,CustomChangePasswordForm,CustomPasswordResetForm,CustomPasswordResetConfirmForm
 from django.contrib.auth.tokens import default_token_generator
@@ -58,7 +58,7 @@ def sign_up(request):
     return render(request, 'registration/register.html', {"form": form})
 
 def get_role(user):
-    if user.groups.filter(name='Admin').exists():
+    if user.is_superuser or user.groups.filter(name='Admin').exists():
         return 'admin_dashboard'  
     elif user.groups.filter(name='Organizer').exists():
         return 'organizer_dashboard'
@@ -152,7 +152,7 @@ def organizer_dashboard(request):
 
 @user_passes_test(is_participant, login_url='no_permission')
 def participant_dashboard(request):
-    rsvp_events = Event.objects.filter(rsvp__user=request.user)
+    rsvp_events = Event.objects.filter(rsvp__user=request.user).annotate(participant_count=Count('rsvp'))
     return render(request, 'dashboard/participant_dashboard.html', {'rsvp_events': rsvp_events})
 
 

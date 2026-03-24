@@ -29,7 +29,8 @@
 
 -   **Backend**: Python, Django
 -   **Frontend**: HTML5, Tailwind CSS, JavaScript (Vanilla)
--   **Database**: SQLite (Default) / PostgreSQL (Supported)
+-   **Database**: PostgreSQL (Supabase)
+-   **Deployment**: Vercel
 -   **Styling**: Google Fonts (Inter)
 
 ## 📦 Installation
@@ -73,6 +74,13 @@ Prerequisites: Python 3.8+ installed.
 
 7.  **Access the App**
     -   Open `http://127.0.0.1:8000/` in your browser.
+
+## 🚀 Deployment (Vercel)
+
+1.  **Prepare Environment**: Copy `.env` variables to Vercel Project Settings.
+2.  **Connect GitHub**: Connect your repository to Vercel.
+3.  **Build Settings**: Use the default settings (Vercel will detect `vercel.json`).
+4.  **Database**: Ensure Supabase is configured with the credentials provided in `.env`.
 
 ## 📂 Project Structure
 
