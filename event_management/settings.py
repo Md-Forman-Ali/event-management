@@ -26,6 +26,7 @@ USE_X_FORWARDED_HOST = True
 
 # APPS
 INSTALLED_APPS = [
+    'cloudinary_storage',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -34,7 +35,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'cloudinary',
-    'cloudinary_storage',
 
     'events',
     'users',
@@ -116,10 +116,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-
-# ❌ REMOVE LOCAL MEDIA STORAGE
-# MEDIA_ROOT removed
 
 # CLOUDINARY (MAIN PART 🔥)
 CLOUDINARY_STORAGE = {
@@ -128,7 +124,15 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
 }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# STORAGES (Modern Way for Django 5.x)
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 # DEFAULT PK
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
