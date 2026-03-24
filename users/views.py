@@ -2,13 +2,14 @@ import threading
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.db.models import Prefetch, Count
+from django.db.models import Prefetch, Count, Q
 from django.contrib import messages
 from users.forms import CustomRegistrationForm, CreateGroup,EditProfileForm, LoginForm, AssignRoleForm,CustomChangePasswordForm,CustomPasswordResetForm,CustomPasswordResetConfirmForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import login, logout
 from events.models import Event,Rsvp,Category
 from django.views.generic import TemplateView,UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView,PasswordChangeView,PasswordResetView
 from django.contrib.auth.views import PasswordResetConfirmView
 from django.contrib.auth import get_user_model
@@ -58,11 +59,13 @@ def sign_up(request):
     return render(request, 'registration/register.html', {"form": form})
 
 def get_role(user):
-    if user.is_superuser or user.groups.filter(name='Admin').exists():
+    # Fetch roles into a set once to avoid multiple database queries
+    user_roles = set(user.groups.values_list('name', flat=True))
+    if user.is_superuser or 'Admin' in user_roles:
         return 'admin_dashboard'  
-    elif user.groups.filter(name='Organizer').exists():
+    elif 'Organizer' in user_roles:
         return 'organizer_dashboard'
-    elif user.groups.filter(name='Participant').exists():
+    elif 'Participant' in user_roles:
         return 'participant_dashboard'
     else:
         return 'home'
@@ -123,9 +126,17 @@ def admin_dashboard(request):
             user.group_name = "No Group Assigned"
 
     total_participants = User.objects.filter(groups__name="Participant").count()
-    total_events = Event.objects.count()
-    upcoming_events = Event.objects.filter(date__gt=today).count()
-    past_events = Event.objects.filter(date__lt=today).count()
+    
+    event_counts = Event.objects.aggregate(
+        total=Count('id'),
+        upcoming=Count('id', filter=Q(date__gt=today)),
+        past=Count('id', filter=Q(date__lt=today))
+    )
+    
+    total_events = event_counts['total']
+    upcoming_events = event_counts['upcoming']
+    past_events = event_counts['past']
+    
     todays_events = Event.objects.filter(date=today)
     show_event = Event.objects.all()
 
@@ -193,7 +204,7 @@ def user_list(request):
 
 
 
-class ProfileView(TemplateView):
+class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/profile.html'
 
 
@@ -247,7 +258,7 @@ class PasswordResetConfirm(PasswordResetConfirmView):
     
 
 
-class EditProfileView(UpdateView):
+class EditProfileView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = EditProfileForm
     template_name = 'accounts/update_profile.html'
@@ -255,10 +266,13 @@ class EditProfileView(UpdateView):
     
     def get_object(self):
         return self.request.user
+
     def form_valid(self, form):
-         
-        form.save()
-        return redirect('profile')
+        messages.success(self.request, "Profile updated successfully!")
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse_lazy('profile')
 
 @user_passes_test(is_admin, login_url='no_permission')
 def test_email(request):

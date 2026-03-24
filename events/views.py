@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from datetime import date
 from events.models import Event, Category, Rsvp
 from events.forms import EventModelForm, CategoryModelForm
-from django.db.models import Q, Exists, OuterRef, Value, BooleanField, Count
+from django.db.models import Q, Exists, OuterRef, Value, BooleanField, Count, Prefetch
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic.list import ListView
@@ -27,7 +27,9 @@ class EventList(ListView):
         start_date = self.request.GET.get('start_date', '')
         end_date = self.request.GET.get('end_date', '')
         
-        events = Event.objects.select_related('category').prefetch_related('rsvp')
+        events = Event.objects.select_related('category').prefetch_related(
+            Prefetch('rsvp', queryset=Rsvp.objects.select_related('user'))
+        )
         
         if search:
             events = events.filter(Q(name__icontains=search) | Q(location__icontains=search))
@@ -99,12 +101,18 @@ class DashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         filter_type = self.request.GET.get('type', 'all')
         today = timezone.localdate()
 
-        context['total_events'] = Event.objects.count()
+        counts = Event.objects.aggregate(
+            total=Count('id'),
+            upcoming=Count('id', filter=Q(date__gt=today)),
+            past=Count('id', filter=Q(date__lt=today))
+        )
+        context['total_events'] = counts['total']
+        context['upcoming_events_count'] = counts['upcoming']
+        context['past_events_count'] = counts['past']
+        
         # Aggregate: Total unique participants across all events
         context['total_participants'] = Rsvp.objects.values('user').distinct().count()
         context['todays_events'] = Event.objects.filter(date=today).select_related('category')
-        context['upcoming_events_count'] = Event.objects.filter(date__gt=today).count()
-        context['past_events_count'] = Event.objects.filter(date__lt=today).count()
         
         events = Event.objects.select_related('category').annotate(participant_count=Count('rsvp'))
 
