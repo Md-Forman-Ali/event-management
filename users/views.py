@@ -8,8 +8,8 @@ from users.forms import CustomRegistrationForm, CreateGroup,EditProfileForm, Log
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import login, logout
 from events.models import Event,Rsvp,Category
-from django.views.generic import TemplateView,UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView,UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView,PasswordChangeView,PasswordResetView
 from django.contrib.auth.views import PasswordResetConfirmView
 from django.contrib.auth import get_user_model
@@ -18,6 +18,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.utils import timezone
 from core.utils import is_admin, is_organizer, is_participant, get_user_role, email_sender
 
 User = get_user_model()
@@ -158,13 +159,74 @@ def admin_dashboard(request):
 
 @user_passes_test(is_organizer, login_url='no_permission')
 def organizer_dashboard(request):
+    today = timezone.localdate()
+    filter_type = request.GET.get('type', 'all')
+    
+    # Statistics for the stats summary grid
+    event_counts = Event.objects.aggregate(
+        total=Count('id'),
+        upcoming=Count('id', filter=Q(date__gt=today)),
+        past=Count('id', filter=Q(date__lt=today))
+    )
+    
+    # Total unique participants across all events
+    total_participants = Rsvp.objects.values('user').distinct().count()
+    
+    # Events scheduled for today
+    todays_events = Event.objects.filter(date=today).select_related('category')
+    
+    # Main event list with filtering logic
+    events = Event.objects.select_related('category').annotate(participant_count=Count('rsvp'))
+
+    if filter_type == 'today':
+        events = events.filter(date=today)
+    elif filter_type == 'upcoming_events':
+        events = events.filter(date__gt=today)
+    elif filter_type == 'past_events':
+        events = events.filter(date__lt=today)
+
     role = get_user_role(request.user)
-    return render(request, 'dashboard/organizer_dashboard.html', {"user_role": role})
+    
+    context = {
+        "user_role": role,
+        "total_participants": total_participants,
+        "total_events": event_counts['total'],
+        "upcoming_events_count": event_counts['upcoming'],
+        "past_events_count": event_counts['past'],
+        "todays_events": todays_events,
+        "show_event": events,
+        "filter_type": filter_type,
+    }
+    
+    return render(request, 'dashboard/organizer_dashboard.html', context)
 
 @user_passes_test(is_participant, login_url='no_permission')
 def participant_dashboard(request):
-    rsvp_events = Event.objects.filter(rsvp__user=request.user).annotate(participant_count=Count('rsvp'))
-    return render(request, 'dashboard/participant_dashboard.html', {'rsvp_events': rsvp_events})
+    # Total events joined by this participant
+    joined_rsvps = Rsvp.objects.filter(user=request.user).select_related('event', 'event__category')
+    total_rsvp = joined_rsvps.count()
+    
+    # Extract the events from RSVP for the list
+    rsvp_events = [rsvp.event for rsvp in joined_rsvps]
+    # Re-fetch with annotations for counting
+    rsvp_events = Event.objects.filter(id__in=[e.id for e in rsvp_events]).annotate(participant_count=Count('rsvp'))
+
+    # Upcoming events they might like to join
+    today = timezone.localdate()
+    upcoming_events = Event.objects.exclude(
+        id__in=[e.id for e in rsvp_events]
+    ).filter(date__gte=today).select_related('category').annotate(participant_count=Count('rsvp'))[:5]
+    
+    role = get_user_role(request.user)
+    
+    context = {
+        "user_role": role,
+        "total_rsvp": total_rsvp,
+        "rsvp_events": rsvp_events,
+        "upcoming_events": upcoming_events,
+    }
+    
+    return render(request, 'dashboard/participant_dashboard.html', context)
 
 
 @user_passes_test(is_admin, login_url='no_permission')
@@ -289,4 +351,37 @@ def test_email(request):
         return HttpResponse(f"SUCCESS: Test email sent to {from_email}. Check your inbox.")
     except Exception as e:
         return HttpResponse(f"FAILED: {str(e)}<br><br>Settings: HOST={settings.EMAIL_HOST}, PORT={settings.EMAIL_PORT}, TLS={settings.EMAIL_USE_TLS}")
+
+
+class DeleteUser(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = User
+    template_name = 'admin/user_confirm_delete.html'
+    pk_url_kwarg = 'id'
+    success_url = reverse_lazy('user-list')
+
+    def test_func(self):
+        return is_admin(self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        user = self.get_object()
+        if user == request.user:
+            messages.error(self.request, "You cannot delete yourself.")
+            return redirect('user-list')
+        messages.success(self.request, f'User {user.username} deleted successfully.')
+        return super().delete(request, *args, **kwargs)
+
+
+class DeleteGroup(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Group
+    template_name = 'admin/group_confirm_delete.html'
+    pk_url_kwarg = 'id'
+    success_url = reverse_lazy('group-list')
+
+    def test_func(self):
+        return is_admin(self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        group = self.get_object()
+        messages.success(self.request, f'Group {group.name} deleted successfully.')
+        return super().delete(request, *args, **kwargs)
 

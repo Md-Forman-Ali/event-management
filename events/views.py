@@ -168,7 +168,7 @@ class CategoryDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     success_url = reverse_lazy('category_list')
 
     def test_func(self):
-        return is_admin(self.request.user)
+        return is_admin(self.request.user) or is_organizer(self.request.user)
 
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, 'Category Deleted Successfully')
@@ -208,7 +208,7 @@ class DeleteEvent(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     template_name = 'event_confirm_delete.html'
 
     def test_func(self):
-        return is_admin(self.request.user)
+        return is_admin(self.request.user) or is_organizer(self.request.user)
 
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, 'Event Deleted Successfully')

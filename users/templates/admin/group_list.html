@@ -8,6 +8,7 @@
                 <tr class="bg-gray-100">
                 <th class="border border-gray-300 px-4 py-2">Group Name</th>
                 <th class="border border-gray-300 px-4 py-2">Permissions</th>
+                <th class="border border-gray-300 px-4 py-2">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,6 +25,14 @@
                                 <span class="text-gray-500 italic">No permissions assigned</span>
                             {% endfor %}
                         </ul>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2 text-center">
+                        <form action="{% url 'delete-group' group.id %}" method="post" class="inline" onsubmit="return confirm('Are you sure you want to delete this group?');">
+                            {% csrf_token %}
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-xs transition-colors">
+                                Delete
+                            </button>
+                        </form>
                     </td>
                     </tr>
                 {% endfor %}

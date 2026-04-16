@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load user_filters %}
+
+{% block title %}Delete User | {{ object.username }}{% endblock title %}
+
+{% block content %}
+<div class="bg-gray-50/50 min-h-screen pt-12 pb-24 flex items-center justify-center">
+  <div class="max-w-md w-full px-4">
+    <div class="glass-card rounded-[3rem] p-10 text-center shadow-2xl shadow-red-100/50 border-red-50">
+      <div class="w-20 h-20 bg-red-50 rounded-[2rem] flex items-center justify-center mx-auto mb-8 animate-bounce">
+        <svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+      </div>
+
+      <h1 class="text-3xl font-black text-slate-900 mb-4 tracking-tight">Serious Action <span class="text-red-500">Required</span></h1>
+      <p class="text-slate-500 mb-10 font-medium">Are you absolutely sure you want to delete the user <span class="font-bold text-slate-900">"{{ object.username }}"</span>? All their RSVP data and profile information will be removed permanently.</p>
+
+      <form method="post" class="flex flex-col gap-4">
+        {% csrf_token %}
+        <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-red-500 text-white font-black uppercase tracking-widest hover:bg-red-600 transition-all shadow-lg shadow-red-200">
+          Confirm Deletion
+        </button>
+        <a href="{% url 'user-list' %}" class="w-full py-4 px-6 rounded-2xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition-all">
+          Abort Action
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}
